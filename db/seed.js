@@ -1,16 +1,16 @@
-const pool = require("./pool");
+const pool = require('./pool');
 
 const seedDB = async () => {
   try {
-    console.log("Seeding Database");
+    console.log('Seeding Database');
 
-    await pool.query("DELETE FROM comments");
-    await pool.query("DELETE FROM posts");
-    await pool.query("DELETE FROM users");
+    await pool.query('DELETE FROM comments');
+    await pool.query('DELETE FROM posts');
+    await pool.query('DELETE FROM users');
 
-    await pool.query("ALTER SEQUENCE users_id_seq RESTART WITH 1");
-    await pool.query("ALTER SEQUENCE posts_id_seq RESTART WITH 1");
-    await pool.query("ALTER SEQUENCE comments_id_seq RESTART WITH 1");
+    await pool.query('ALTER SEQUENCE users_id_seq RESTART WITH 1');
+    await pool.query('ALTER SEQUENCE posts_id_seq RESTART WITH 1');
+    await pool.query('ALTER SEQUENCE comments_id_seq RESTART WITH 1');
 
     await pool.query(`
             INSERT INTO users (first_name, last_name, username, email, password, role, created_at)
@@ -63,12 +63,12 @@ const seedDB = async () => {
                 ('A mans best friend, indeed. Mutt is the true hero.', NOW(), NOW(), 5, 10, NULL)
             `);
 
-    console.log("Database Successfully Created");
+    console.log('Database Successfully Created');
   } catch (err) {
-    console.error("Error Seeding Database", err);
+    console.error('Error Seeding Database', err);
   } finally {
     await pool.end();
-    console.log("Database connection closed");
+    console.log('Database connection closed');
   }
 };
 
