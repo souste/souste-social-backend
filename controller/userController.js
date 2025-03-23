@@ -45,6 +45,8 @@ const getUser = async (req, res) => {
   }
 };
 
+// Need to validate/hash the passwords here
+
 const updateUser = async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
