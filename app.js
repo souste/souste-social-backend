@@ -9,11 +9,11 @@ app.use(cors());
 app.use(express.json());
 
 const userRoutes = require('./route/userRoutes');
-// const postRoutes = require("./routes/postRoutes");
+const postRoutes = require('./route/postRoutes');
 // const authRoutes = require("./routes/authRoutes");
 
 app.use('/api/v1/users', userRoutes);
-// app.use("/api/v1/posts", postRoutes);
+app.use('/api/v1/posts', postRoutes);
 // app.use("/api/v1/auth", authRoutes);
 
 const PORT = process.env.PORT || 3000;

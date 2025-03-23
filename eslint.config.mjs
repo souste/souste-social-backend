@@ -6,7 +6,7 @@ export default defineConfig([
   { files: ['**/*.{js,mjs,cjs}'] },
   {
     files: ['**/*.{js,mjs,cjs}'],
-    languageOptions: { globals: globals.node }, // Changed to Node.js globals
+    languageOptions: { globals: globals.node },
   },
   {
     files: ['**/*.{js,mjs,cjs}'],
