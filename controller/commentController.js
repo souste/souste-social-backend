@@ -124,8 +124,83 @@ const createNewCommentByPost = async (req, res) => {
   }
 };
 
+const updateCommentByPost = async (req, res) => {
+  try {
+    const postId = req.params.postId;
+    const commentId = req.params.id;
+    const { content } = req.body;
+
+    const commentCheck = await pool.query(
+      'SELECT id FROM comments WHERE id = $1 AND post_id = $2',
+      [commentId, postId]
+    );
+
+    if (commentCheck.rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Incorrect Post for Updating Comment',
+        message: `Comment with ID ${commentId} does not belong to Post ID ${postId}`,
+      });
+    }
+
+    const result = await pool.query(
+      `UPDATE comments SET content = $1 WHERE id = $2 RETURNING *`,
+      [content, commentId]
+    );
+
+    res.status(200).json({
+      success: true,
+      data: result.rows[0],
+      message: 'Comment Updated Successfully',
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      error: 'Internal Server Error',
+      message: err.message,
+    });
+  }
+};
+
+const deleteCommentByPost = async (req, res) => {
+  try {
+    const postId = req.params.postId;
+    const commentId = req.params.id;
+
+    const commentCheck = await pool.query(
+      'SELECT id, post_id FROM comments WHERE id = $1 AND post_id = $2',
+      [commentId, postId]
+    );
+
+    if (commentCheck.rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Incorrect Post for deleting comment',
+        message: `Comment with ID ${commentId} does not belong to Post ID ${postId}`,
+      });
+    }
+
+    await pool.query('DELETE FROM comments WHERE id = $1', [commentId]);
+
+    res.status(200).json({
+      success: true,
+      message: 'Comment Deleted Successfully',
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      error: 'Internal Server Error',
+      message: err.message,
+    });
+  }
+};
+
 module.exports = {
   getAllCommentsByPost,
   getCommentByPost,
   createNewCommentByPost,
+  updateCommentByPost,
+  deleteCommentByPost,
 };
