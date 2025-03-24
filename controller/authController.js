@@ -28,8 +28,8 @@ const validateUser = [
     .normalizeEmail(),
   body('password')
     .trim()
-    .isLength({ min: 8, max: 20 })
-    .withMessage('Password must be between 8 and 20 characters'),
+    .isLength({ min: 6, max: 20 })
+    .withMessage('Password must be between 6 and 20 characters'),
   body('confirm_password')
     .trim()
     .custom((value, { req }) => {
@@ -84,7 +84,64 @@ const createNewUser = async (req, res) => {
   }
 };
 
+const validateLogin = [
+  body('email')
+    .trim()
+    .isEmail()
+    .withMessage('Invalid email format')
+    .normalizeEmail(),
+  body('password').trim().notEmpty().withMessage('Password is required'),
+];
+
+const loginUser = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array(),
+    });
+  }
+  try {
+    const { email, password } = req.body;
+    const result = await pool.query(`SELECT * FROM users WHERE email = $1`, [
+      email,
+    ]);
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials',
+      });
+    }
+
+    const user = result.rows[0];
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      res.status(401).json({
+        success: false,
+        message: 'Invalid credentials',
+      });
+    }
+
+    res.status(200).json({
+      status: true,
+      data: user,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      error: 'Internal Server Error',
+      message: err.message,
+    });
+  }
+};
+
 module.exports = {
   validateUser,
   createNewUser,
+  validateLogin,
+  loginUser,
 };
