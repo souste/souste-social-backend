@@ -22,6 +22,7 @@ const seedDB = async () => {
             ('Mutt', 'of Henry', 'mutt', 'mutt@outlook.com', 'woof123', 'user', NOW()),
             ('Father', 'Godwin', 'godwin', 'godwin@outlook.com', 'woof123', 'user', NOW()),
             ('Radzig', 'Kobyla', 'radzigk', 'radzig@outlook.com', 'woof123', 'admin', NOW()),
+            ('Hanush', 'of Leipa', 'hanushl', 'hanush@outlook.com', 'woof123', 'user', NOW()),
             ('Divish', 'of Talmberg', 'divish', 'divish@outlook.com', 'woof123', 'admin', NOW()),
             ('Erik', 'of Istvan', 'erikist', 'erik@outlook.com', 'woof123', 'user', NOW()),
             ('Otto', 'von Bergow', 'ottber', 'otto@outlook.com', 'woof123', 'user', NOW()),
