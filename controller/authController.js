@@ -140,11 +140,11 @@ const loginUser = async (req, res) => {
     const payload = {
       user: {
         id: user.id,
-        password: user.password,
+        username: user.username,
       },
     };
 
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '25h' });
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
 
     const { password: _, ...userData } = user;
 
