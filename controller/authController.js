@@ -1,6 +1,9 @@
 const pool = require('../db/pool');
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
+const jwt = require('jsonwebtoken');
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const validateUser = [
   body('first_name')
@@ -69,9 +72,18 @@ const createNewUser = async (req, res) => {
       [first_name, last_name, username, email, hashedPassword]
     );
 
-    res.status(200).json({
+    const payload = {
+      user: {
+        id: result.rows[0].id,
+        username: result.rows[0].username,
+      },
+    };
+
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+
+    res.status(201).json({
       success: true,
-      data: result.rows[0],
+      data: { user: result.rows[0], token },
       message: 'User Created Successfully',
     });
   } catch (err) {
@@ -125,9 +137,21 @@ const loginUser = async (req, res) => {
       });
     }
 
+    const payload = {
+      user: {
+        id: user.id,
+        password: user.password,
+      },
+    };
+
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '25h' });
+
+    const { password: _, ...userData } = user;
+
     res.status(200).json({
       status: true,
-      data: user,
+      data: { user: userData, token },
+      message: 'Login Successful',
     });
   } catch (err) {
     console.error(err);
