@@ -138,8 +138,8 @@ const updateCommentByPost = async (req, res) => {
     if (commentCheck.rows.length === 0) {
       return res.status(400).json({
         success: false,
-        error: 'Incorrect Post for Updating Comment',
-        message: `Comment with ID ${commentId} does not belong to Post ID ${postId}`,
+        error: 'Not Found',
+        message: `Comment with ID ${commentId} Not found`,
       });
     }
 
@@ -176,8 +176,8 @@ const deleteCommentByPost = async (req, res) => {
     if (commentCheck.rows.length === 0) {
       return res.status(400).json({
         success: false,
-        error: 'Incorrect Post for deleting comment',
-        message: `Comment with ID ${commentId} does not belong to Post ID ${postId}`,
+        error: 'Not Found',
+        message: `Comment with ID ${commentId} Not found`,
       });
     }
 
