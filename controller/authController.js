@@ -97,7 +97,24 @@ const loginUser = async (req, res, next) => {
   }
 };
 
+const logoutUser = async (req, res) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: 'No token provided, cannot logout',
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: null,
+    message: 'Logout successful',
+  });
+};
+
 module.exports = {
   createNewUser,
   loginUser,
+  logoutUser,
 };
