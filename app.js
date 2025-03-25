@@ -8,6 +8,10 @@ app.use(cors());
 
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.send('API is running...');
+});
+
 const userRoutes = require('./route/userRoutes');
 const postRoutes = require('./route/postRoutes');
 const commentRoutes = require('./route/commentRoutes');
