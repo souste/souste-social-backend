@@ -97,6 +97,8 @@ const loginUser = async (req, res, next) => {
   }
 };
 
+//apply blacklisting here after MVP
+
 const logoutUser = async (req, res) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
   if (!token) {
