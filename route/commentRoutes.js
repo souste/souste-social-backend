@@ -1,11 +1,17 @@
 const { Router } = require('express');
 const router = Router({ mergeParams: true });
-const commentController = require('../controller/commentController');
+const {
+  getAllCommentsByPost,
+  getCommentByPost,
+  createNewCommentByPost,
+  updateCommentByPost,
+  deleteCommentByPost,
+} = require('../controller/commentController');
 
-router.get('/', commentController.getAllCommentsByPost);
-router.get('/:id', commentController.getCommentByPost);
-router.post('/', commentController.createNewCommentByPost);
-router.patch('/:id', commentController.updateCommentByPost);
-router.delete('/:id', commentController.deleteCommentByPost);
+router.get('/', getAllCommentsByPost);
+router.get('/:id', getCommentByPost);
+router.post('/', createNewCommentByPost);
+router.patch('/:id', updateCommentByPost);
+router.delete('/:id', deleteCommentByPost);
 
 module.exports = router;

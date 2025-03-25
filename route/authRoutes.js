@@ -1,24 +1,14 @@
 const { Router } = require('express');
 const router = Router();
-const authController = require('../controller/authController');
+const { createNewUser, loginUser } = require('../controller/authController');
 const {
   validateUser,
   validateLogin,
   handleValidationErrors,
 } = require('../middleware/validationMiddleware');
 
-router.post(
-  '/sign-up',
-  validateUser,
-  handleValidationErrors,
-  authController.createNewUser
-);
+router.post('/sign-up', validateUser, handleValidationErrors, createNewUser);
 
-router.post(
-  '/login',
-  validateLogin,
-  handleValidationErrors,
-  authController.loginUser
-);
+router.post('/login', validateLogin, handleValidationErrors, loginUser);
 
 module.exports = router;
