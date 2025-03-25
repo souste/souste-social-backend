@@ -1,6 +1,6 @@
 const pool = require('../db/pool');
 
-const getAllCommentsByPost = async (req, res) => {
+const getAllCommentsByPost = async (req, res, next) => {
   try {
     const postId = req.params.postId;
 
@@ -27,15 +27,11 @@ const getAllCommentsByPost = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({
-      success: false,
-      error: 'Internal Server Error',
-      message: err.message,
-    });
+    next(err);
   }
 };
 
-const getCommentByPost = async (req, res) => {
+const getCommentByPost = async (req, res, next) => {
   try {
     const postId = req.params.postId;
     const commentId = req.params.id;
@@ -70,17 +66,13 @@ const getCommentByPost = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({
-      success: false,
-      error: 'Internal Server Error',
-      message: err.message,
-    });
+    next(err);
   }
 };
 
 // can take user_id out of req.body once I'm using JWT web token
 
-const createNewCommentByPost = async (req, res) => {
+const createNewCommentByPost = async (req, res, next) => {
   try {
     const postId = req.params.postId;
     const { content, user_id } = req.body;
@@ -116,15 +108,11 @@ const createNewCommentByPost = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({
-      success: false,
-      error: 'Internal Server Error',
-      message: err.message,
-    });
+    next(err);
   }
 };
 
-const updateCommentByPost = async (req, res) => {
+const updateCommentByPost = async (req, res, next) => {
   try {
     const postId = req.params.postId;
     const commentId = req.params.id;
@@ -155,15 +143,11 @@ const updateCommentByPost = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({
-      success: false,
-      error: 'Internal Server Error',
-      message: err.message,
-    });
+    next(err);
   }
 };
 
-const deleteCommentByPost = async (req, res) => {
+const deleteCommentByPost = async (req, res, next) => {
   try {
     const postId = req.params.postId;
     const commentId = req.params.id;
@@ -189,11 +173,7 @@ const deleteCommentByPost = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({
-      success: false,
-      error: 'Internal Server Error',
-      message: err.message,
-    });
+    next(err);
   }
 };
 

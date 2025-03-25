@@ -1,6 +1,6 @@
 const pool = require('../db/pool');
 
-const getAllPosts = async (req, res) => {
+const getAllPosts = async (req, res, next) => {
   try {
     const result = await pool.query('SELECT * FROM posts');
     res.status(200).json({
@@ -8,16 +8,11 @@ const getAllPosts = async (req, res) => {
       data: result.rows,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      success: false,
-      error: 'Internal Server Error',
-      message: err.message,
-    });
+    next(err);
   }
 };
 
-const getPost = async (req, res) => {
+const getPost = async (req, res, next) => {
   try {
     const postId = parseInt(req.params.id);
     const result = await pool.query('SELECT * FROM posts WHERE id = $1', [
@@ -36,18 +31,13 @@ const getPost = async (req, res) => {
       data: result.rows[0],
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      success: false,
-      error: 'Internal Server Error',
-      message: err.message,
-    });
+    next(err);
   }
 };
 
 // can take user_id out of req.body once I'm using JWT web token
 
-const createNewPost = async (req, res) => {
+const createNewPost = async (req, res, next) => {
   try {
     const { content, user_id } = req.body;
 
@@ -69,16 +59,11 @@ const createNewPost = async (req, res) => {
       message: 'Post Created Successfully',
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      success: false,
-      error: 'Internal Server Error',
-      message: err.message,
-    });
+    next(err);
   }
 };
 
-const updatePost = async (req, res) => {
+const updatePost = async (req, res, next) => {
   try {
     const postId = parseInt(req.params.id);
     const { content } = req.body;
@@ -105,16 +90,11 @@ const updatePost = async (req, res) => {
       message: 'Post Updated Successfully',
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      success: false,
-      error: 'Internal Server Error',
-      message: err.message,
-    });
+    next(err);
   }
 };
 
-const deletePost = async (req, res) => {
+const deletePost = async (req, res, next) => {
   try {
     const postId = req.params.id;
 
@@ -137,11 +117,7 @@ const deletePost = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({
-      success: false,
-      error: 'Internal Server Error',
-      message: err.message,
-    });
+    next(err);
   }
 };
 

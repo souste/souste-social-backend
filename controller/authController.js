@@ -8,7 +8,7 @@ if (!JWT_SECRET) {
   throw new Error('JWT_SECRET is not defined in environment variables');
 }
 
-const createNewUser = async (req, res) => {
+const createNewUser = async (req, res, next) => {
   try {
     const { first_name, last_name, username, email } = req.body;
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -46,15 +46,11 @@ const createNewUser = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({
-      success: false,
-      error: 'Internal Server Error',
-      message: err.message,
-    });
+    next(err);
   }
 };
 
-const loginUser = async (req, res) => {
+const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const result = await pool.query(`SELECT * FROM users WHERE email = $1`, [
@@ -97,11 +93,7 @@ const loginUser = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({
-      success: false,
-      error: 'Internal Server Error',
-      message: err.message,
-    });
+    next(err);
   }
 };
 
