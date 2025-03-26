@@ -2,7 +2,9 @@ const pool = require('../db/pool');
 
 const getAllPosts = async (req, res, next) => {
   try {
-    const result = await pool.query('SELECT * FROM posts');
+    const result = await pool.query(
+      'SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id'
+    );
     res.status(200).json({
       success: true,
       data: result.rows,
@@ -15,9 +17,10 @@ const getAllPosts = async (req, res, next) => {
 const getPost = async (req, res, next) => {
   try {
     const postId = parseInt(req.params.id);
-    const result = await pool.query('SELECT * FROM posts WHERE id = $1', [
-      postId,
-    ]);
+    const result = await pool.query(
+      'SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id WHERE posts.id = $1',
+      [postId]
+    );
 
     if (result.rows.length === 0) {
       return res.status(404).json({
