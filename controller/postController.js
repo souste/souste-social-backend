@@ -3,7 +3,11 @@ const pool = require('../db/pool');
 const getAllPosts = async (req, res, next) => {
   try {
     const result = await pool.query(
-      'SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id'
+      `SELECT posts.*, 
+       users.username 
+       FROM posts 
+       JOIN users ON posts.user_id = users.id
+       ORDER BY posts.created_at DESC`
     );
     res.status(200).json({
       success: true,

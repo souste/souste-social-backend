@@ -17,7 +17,12 @@ const getAllCommentsByPost = async (req, res, next) => {
     }
 
     const result = await pool.query(
-      'SELECT * FROM comments WHERE post_id = $1',
+      `SELECT comments.*, 
+      users.username 
+      FROM comments 
+      JOIN users ON comments.user_id = users.id 
+      WHERE post_id = $1 
+      ORDER BY comments.created_at DESC`,
       [postId]
     );
 
@@ -31,6 +36,7 @@ const getAllCommentsByPost = async (req, res, next) => {
   }
 };
 
+// Will I even need this one?
 const getCommentByPost = async (req, res, next) => {
   try {
     const postId = req.params.postId;
