@@ -29,6 +29,13 @@ CREATE TABLE comments (
 
 );
 
+CREATE TABLE profile (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    picture VARCHAR(500),
+    bio TEXT NOT NULL DEFAULT '',
+    location VARCHAR(255)
+);
+
 
 
 
