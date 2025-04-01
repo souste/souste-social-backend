@@ -107,6 +107,15 @@ const createNewCommentByPost = async (req, res, next) => {
       `INSERT INTO comments (content, user_id, post_id) VALUES ($1, $2, $3) RETURNING *`,
       [content, user_id, postId]
     );
+
+    const userResult = await pool.query(
+      `SELECT username FROM users WHERE id = $1`,
+      [user_id]
+    );
+
+    const createdComment = result.rows[0];
+    createdComment.username = userResult.rows[0].username;
+
     res.status(201).json({
       success: true,
       data: result.rows[0],
