@@ -118,7 +118,7 @@ const createNewCommentByPost = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      data: result.rows[0],
+      data: createdComment,
       message: 'Comment Created Successfully',
     });
   } catch (err) {
