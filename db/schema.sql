@@ -32,7 +32,7 @@ CREATE TABLE comments (
 CREATE TABLE profile (
     user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     picture VARCHAR(500),
-    bio TEXT NOT NULL DEFAULT '',
+    bio TEXT,
     location VARCHAR(255),
     birth_date DATE,
     occupation VARCHAR (255),
