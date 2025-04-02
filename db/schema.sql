@@ -33,7 +33,10 @@ CREATE TABLE profile (
     user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     picture VARCHAR(500),
     bio TEXT NOT NULL DEFAULT '',
-    location VARCHAR(255)
+    location VARCHAR(255),
+    birth_date DATE,
+    occupation VARCHAR (255),
+    friend_count INTEGER DEFAULT 0
 );
 
 

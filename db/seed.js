@@ -38,7 +38,7 @@ const seedDB = async () => {
           ('A firsthand account of the horrors of war.', NOW(), NOW(), 'public', 1),
           ('A hunting trip that didnt go as planned.', NOW(), NOW(), 'public', 2),
           ('A sermon no one expected.', NOW(), NOW(), 'public', 6),
-          ('The monks are hiding something...', NOW(), NOW(), FALSE, 12),
+          ('The monks are hiding something...', NOW(), NOW(), 'public', 12),
           ('A fight for honor and revenge.', NOW(), NOW(), 'public', 9),
           ('Tales from the front lines.', NOW(), NOW(), 'public', 8),
           ('Tracking down a ruthless gang.', NOW(), NOW(), 'public', 3),
@@ -63,6 +63,48 @@ const seedDB = async () => {
                 ('Markvart got what he deserved.', NOW(), NOW(), 4, 9, NULL), 
                 ('A mans best friend, indeed. Mutt is the true hero.', NOW(), NOW(), 5, 10, NULL)
             `);
+
+    await pool.query(`
+              INSERT INTO profile (user_id, picture, bio, location, birth_date, occupation, friend_count)
+              VALUES 
+              (1, 'https://example.com/henry.jpg', 
+   'Blacksmiths son turned adventurer. Lover of mead, swords, and open fields.', 
+   'Skalitz Village', 
+   '1380-01-15', 
+   'Adventurer', 
+   5),
+
+  -- Hans Capon (user_id: 2)
+  (2, 'https://example.com/hans.jpg', 
+   'Nobleman with a sharp blade and sharper wit. Always up for a hunt.', 
+   'Rattay', 
+   '1385-03-22', 
+   'Noble', 
+   8),
+
+  -- Katherine (user_id: 3)
+  (3, 'https://example.com/katherine.jpg', 
+   'Strong-willed lass who survived Skalitz. Skilled in healing and grit.', 
+   'Rattay', 
+   '1382-07-10', 
+   'Healer', 
+   4),
+
+  -- Markvart von Aulitz (user_id: 4)
+  (4, 'https://example.com/markvart.jpg', 
+   'Ruthless commander. Loyalty is my strength, mercy my weakness.', 
+   'Talmberg', 
+   '1360-11-05', 
+   'Knight', 
+   12),
+
+  -- Erik of Istvan (user_id: 10)
+  (10, 'https://example.com/erik.jpg', 
+   'Mercenary with a grudge. I fight for gold and glory.', 
+   'Sasau', 
+   '1375-09-18', 
+   'Mercenary', 
+   3);`);
 
     console.log('Database Successfully Created');
   } catch (err) {
