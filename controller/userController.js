@@ -1,4 +1,5 @@
 const pool = require('../db/pool');
+const bcrypt = require('bcryptjs');
 
 const getAllUsers = async (req, res, next) => {
   try {
@@ -55,9 +56,15 @@ const updateUser = async (req, res, next) => {
         message: `No user found with id ${userId}`,
       });
     }
+
+    let hashedPassword = checkUser.rows[0].password;
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
+
     const result = await pool.query(
       `UPDATE users SET first_name = $1, last_name = $2, username = $3, email = $4, password = $5 WHERE id = $6 RETURNING *`,
-      [first_name, last_name, username, email, password, userId]
+      [first_name, last_name, username, email, hashedPassword, userId]
     );
     res.status(200).json({
       success: true,
