@@ -134,62 +134,6 @@ const getProfile = async (req, res, next) => {
   }
 };
 
-const createProfile = async (req, res, next) => {
-  try {
-    const userId = parseInt(req.params.id);
-    const { picture, bio, location, birth_date, occupation, friend_count } =
-      req.body;
-
-    const checkUser = await pool.query('SELECT * FROM users WHERE id = $1', [
-      userId,
-    ]);
-
-    if (checkUser.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        error: 'User not found',
-        message: `No user found with id ${userId}`,
-      });
-    }
-
-    const profileCheck = await pool.query(
-      `SELECT * FROM profile WHERE user_id = $1`,
-      [userId]
-    );
-
-    if (profileCheck.rows.length > 0) {
-      return res.status(400).json({
-        success: false,
-        error: 'Profile already exists',
-        message: `A profile already exists for user with id ${userId}`,
-      });
-    }
-
-    const result = await pool.query(
-      `INSERT INTO profile (user_id, picture, bio, location, birth_date, occupation, friend_count)
-      VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      [
-        userId,
-        picture,
-        bio || '',
-        location,
-        birth_date,
-        occupation,
-        friend_count || 0,
-      ]
-    );
-
-    res.status(201).json({
-      success: true,
-      data: result.rows[0],
-      message: 'Profile Created Successfully',
-    });
-  } catch (err) {
-    console.error(err);
-    next(err);
-  }
-};
-
 const updateProfile = async (req, res, next) => {
   try {
     const userId = parseInt(req.params.id);
@@ -224,11 +168,11 @@ const updateProfile = async (req, res, next) => {
     const result = await pool.query(
       `UPDATE profile SET picture = $1, bio = $2, location = $3, birth_date = $4, occupation = $5, friend_count = $6 WHERE user_id = $7 RETURNING *`,
       [
-        picture,
+        picture || null,
         bio || '',
-        location,
-        birth_date,
-        occupation,
+        location || null,
+        birth_date || null,
+        occupation || null,
         friend_count || 0,
         userId,
       ]
@@ -251,6 +195,5 @@ module.exports = {
   updateUser,
   deleteUser,
   getProfile,
-  createProfile,
   updateProfile,
 };

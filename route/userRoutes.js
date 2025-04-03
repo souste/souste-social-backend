@@ -6,7 +6,6 @@ const {
   updateUser,
   deleteUser,
   getProfile,
-  createProfile,
   updateProfile,
 } = require('../controller/userController');
 
@@ -16,7 +15,6 @@ router.patch('/:id', updateUser);
 router.delete('/:id', deleteUser);
 
 router.get('/:id/profile', getProfile);
-router.post(`/:id/profile`, createProfile);
 router.patch(`/:id/profile`, updateProfile);
 
 module.exports = router;

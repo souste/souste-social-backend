@@ -24,24 +24,50 @@ const createNewUser = async (req, res, next) => {
         message: 'User with that email already exists',
       });
     }
-    const result = await pool.query(
+
+    await pool.query('BEGIN');
+
+    const userResult = await pool.query(
       `INSERT INTO users (first_name, last_name, username, email, password) 
             VALUES ($1, $2, $3, $4, $5) RETURNING *`,
       [first_name, last_name, username, email, hashedPassword]
     );
 
+    const userId = userResult.rows[0].id;
+
+    const profileResult = await pool.query(
+      `INSERT INTO profile (user_id, picture, bio, location, birth_date, occupation, friend_count)
+      VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [
+        userId,
+        'https://img.freepik.com/free-vector/user-circles-set_78370-4704.jpg?t=st=1743675007~exp=1743678607~hmac=2e39f0cfcbb88877bd11807dd5542f63b325111b3a7352b1d34b3e9b15421fe6&w=740',
+        '',
+        '',
+        null,
+        '',
+        0,
+      ]
+    );
+
+    await pool.query('COMMIT');
+
     const payload = {
       user: {
-        id: result.rows[0].id,
-        username: result.rows[0].username,
+        id: userId,
+        username: userResult.rows[0].username,
       },
     };
 
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
 
+    const userData = {
+      ...userResult.rows[0],
+      profile: profileResult.rows[0],
+    };
+
     res.status(201).json({
       success: true,
-      data: { user: result.rows[0], token },
+      data: { user: userData, token },
       message: 'User Created Successfully',
     });
   } catch (err) {
