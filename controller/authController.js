@@ -38,15 +38,7 @@ const createNewUser = async (req, res, next) => {
     const profileResult = await pool.query(
       `INSERT INTO profile (user_id, picture, bio, location, birth_date, occupation, friend_count)
       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      [
-        userId,
-        'https://img.freepik.com/free-vector/user-circles-set_78370-4704.jpg?t=st=1743675007~exp=1743678607~hmac=2e39f0cfcbb88877bd11807dd5542f63b325111b3a7352b1d34b3e9b15421fe6&w=740',
-        '',
-        '',
-        null,
-        '',
-        0,
-      ]
+      [userId, '../assets/default-profile.JPG', '', '', null, '', 0]
     );
 
     await pool.query('COMMIT');

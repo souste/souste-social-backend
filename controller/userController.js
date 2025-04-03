@@ -168,11 +168,11 @@ const updateProfile = async (req, res, next) => {
     const result = await pool.query(
       `UPDATE profile SET picture = $1, bio = $2, location = $3, birth_date = $4, occupation = $5, friend_count = $6 WHERE user_id = $7 RETURNING *`,
       [
-        picture || null,
+        picture || '../assets/default-profile.JPG',
         bio || '',
-        location || null,
-        birth_date || null,
-        occupation || null,
+        location || '',
+        birth_date || '',
+        occupation || '',
         friend_count || 0,
         userId,
       ]
