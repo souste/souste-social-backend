@@ -171,7 +171,7 @@ const updateProfile = async (req, res, next) => {
         picture || '../assets/default-profile.JPG',
         bio || '',
         location || '',
-        birth_date || '',
+        birth_date || null,
         occupation || '',
         friend_count || 0,
         userId,
