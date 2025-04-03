@@ -71,6 +71,7 @@ const createNewUser = async (req, res, next) => {
       message: 'User Created Successfully',
     });
   } catch (err) {
+    await pool.query('ROLLBACK');
     console.error(err);
     next(err);
   }
