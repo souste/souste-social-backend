@@ -19,6 +19,6 @@ router.delete('/:id', deleteUser);
 router.get('/:id/profile', getProfile);
 router.patch(`/:id/profile`, updateProfile);
 
-router.post(':id/profile/image', uploadMiddleware, uploadProfileImage);
+router.post('/:id/profile/image', uploadMiddleware, uploadProfileImage);
 
 module.exports = router;
