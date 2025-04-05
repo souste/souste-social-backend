@@ -1,5 +1,8 @@
 const pool = require('../db/pool');
 const bcrypt = require('bcryptjs');
+const { upload } = require('../config/cloudinary');
+
+const uploadMiddleware = upload.single('image');
 
 const getAllUsers = async (req, res, next) => {
   try {
@@ -37,8 +40,6 @@ const getUser = async (req, res, next) => {
     next(err);
   }
 };
-
-// Need to validate/hash the passwords here
 
 const updateUser = async (req, res, next) => {
   try {
@@ -189,6 +190,47 @@ const updateProfile = async (req, res, next) => {
   }
 };
 
+const uploadProfileImage = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: 'No image file provides',
+      });
+    }
+
+    const userId = parseInt(req.params.id);
+
+    const checkUser = await pool.query('SELECT * FROM users WHERE id = $1', [
+      userId,
+    ]);
+
+    if (checkUser.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+        message: `No user found with id ${userId}`,
+      });
+    }
+
+    const result = await pool.query(
+      `UPDATE profile SET picture = $1 WHERE user_id = $2 RETURNING *`,
+      [req.file.path, userId]
+    );
+
+    res.status(200).json({
+      success: true,
+      data: {
+        picture: result.rows[0].picture,
+      },
+      message: 'Profile Image Updated Successfully',
+    });
+  } catch (err) {
+    console.error('Error uploading profile image', err);
+    next(err);
+  }
+};
+
 module.exports = {
   getAllUsers,
   getUser,
@@ -196,4 +238,6 @@ module.exports = {
   deleteUser,
   getProfile,
   updateProfile,
+  uploadProfileImage,
+  uploadMiddleware,
 };
