@@ -200,7 +200,6 @@ const uploadProfileImage = async (req, res, next) => {
     }
 
     const userId = parseInt(req.params.id);
-    console.log('File received:', req.file);
 
     const checkUser = await pool.query('SELECT * FROM users WHERE id = $1', [
       userId,
@@ -214,17 +213,15 @@ const uploadProfileImage = async (req, res, next) => {
       });
     }
 
-    const imageUrl = req.file.path || req.file.secure_url;
-
     const result = await pool.query(
       `UPDATE profile SET picture = $1 WHERE user_id = $2 RETURNING *`,
-      [imageUrl, userId]
+      [req.file.path, userId]
     );
 
     res.status(200).json({
       success: true,
       data: {
-        imageUrl: result.rows[0].picture,
+        picture: result.rows[0].picture,
       },
       message: 'Profile Image Updated Successfully',
     });
