@@ -85,7 +85,7 @@ const seedDB = async () => {
       (14, 'https://res.cloudinary.com/dbkarqkym/image/upload/v1744199152/souste-social-profile-pics/tagyhicoy78hoeqqxfph.jpg', 
        'Millers lass with a brave heart. Skalitz lives in me.', 
        'Rattay', '1387-02-28', 'Miller', 0),
-      (15, 'https://res.cloudinary.com/demo/image/upload/non_user.jpg', 
+      (15, 'https://res.cloudinary.com/dbkarqkym/image/upload/v1744210239/souste-social-profile-pics/xcqqaiimfjwdxvnxeunq.jpg', 
        'Wanderer with no name. I watch from the shadows.', 
        'Unknown', '1390-10-10', 'Stranger', 0)
     `);
