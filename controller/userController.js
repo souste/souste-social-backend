@@ -231,6 +231,18 @@ const uploadProfileImage = async (req, res, next) => {
   }
 };
 
+const getAllProfiles = async (req, res, next) => {
+  try {
+    const result = await pool.query(`SELECT * FROM profile`);
+    res.status(200).json({
+      success: true,
+      data: result.rows,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getAllUsers,
   getUser,
@@ -240,4 +252,5 @@ module.exports = {
   updateProfile,
   uploadProfileImage,
   uploadMiddleware,
+  getAllProfiles,
 };

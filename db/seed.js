@@ -122,7 +122,7 @@ const seedDB = async () => {
       ('A mans best friend, indeed. Mutt is the true hero.', NOW(), NOW(), 5, 10, NULL)
     `);
 
-    console.log('Database Successfully Seeded'); // Fixed message
+    console.log('Database Successfully Seeded');
   } catch (err) {
     console.error('Error Seeding Database', err);
   } finally {
