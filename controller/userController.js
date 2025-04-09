@@ -105,6 +105,22 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
+const getAllProfiles = async (req, res, next) => {
+  try {
+    const result = await pool.query(`
+      SELECT profile.*,
+      users.username, users.first_name, users.last_name, users.email, users.created_at
+      FROM profile
+      JOIN users on profile.user_id = users.id`);
+    res.status(200).json({
+      success: true,
+      data: result.rows,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const getProfile = async (req, res, next) => {
   try {
     const userId = parseInt(req.params.id);
@@ -227,18 +243,6 @@ const uploadProfileImage = async (req, res, next) => {
     });
   } catch (err) {
     console.error('Error uploading profile image', err);
-    next(err);
-  }
-};
-
-const getAllProfiles = async (req, res, next) => {
-  try {
-    const result = await pool.query(`SELECT * FROM profile`);
-    res.status(200).json({
-      success: true,
-      data: result.rows,
-    });
-  } catch (err) {
     next(err);
   }
 };
