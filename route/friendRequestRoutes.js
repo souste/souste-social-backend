@@ -2,7 +2,7 @@ const { Router } = require('express');
 const router = Router();
 const { sendRequest } = require('../controller/friendRequestController');
 
-router.post('/:id/send', sendRequest);
+router.post('/:userId/send/:friendId', sendRequest);
 
 // router.patch('/:userId/accept/:friendId', acceptRequest);
 // router.patch('/:id/reject', rejectRequest);
