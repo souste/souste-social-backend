@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const router = Router();
-const { sendRequest } = require('../controller/friendRequetController');
+const { sendRequest } = require('../controller/friendRequestController');
 
 router.post('/:id/send', sendRequest);
 
