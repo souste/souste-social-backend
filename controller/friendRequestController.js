@@ -1,5 +1,20 @@
 const pool = require('../db/pool');
 
+const getAllFriendships = async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `
+      SELECT * FROM friendship`
+    );
+    res.status(200).json({
+      success: true,
+      data: result.rows,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const sendRequest = async (req, res, next) => {
   try {
     const userId = parseInt(req.params.userId);
@@ -136,8 +151,50 @@ const rejectRequest = async (req, res, next) => {
   }
 };
 
+const unfriend = async (req, res, next) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const friendId = parseInt(req.params.friendId);
+
+    if (userId === friendId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid Request',
+        message: 'You cannot unfriend yourself',
+      });
+    }
+
+    const friendship = await pool.query(
+      `SELECT * FROM friendship WHERE (user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1) AND status = $3`,
+      [userId, friendId, 'accepted']
+    );
+
+    if (friendship.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Friendship not found',
+        message: 'No active friendship found with this user',
+      });
+    }
+
+    await pool.query(`DELETE FROM friendship WHERE id = $1`, [
+      friendship.rows[0].id,
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: 'Unfriended friend successfully',
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
 module.exports = {
+  getAllFriendships,
   sendRequest,
   acceptRequest,
   rejectRequest,
+  unfriend,
 };
