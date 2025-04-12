@@ -80,6 +80,64 @@ const sendRequest = async (req, res, next) => {
   }
 };
 
+const acceptRequest = async (req, res, next) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const friendId = parseInt(req.params.friendId);
+
+    const result = await pool.query(
+      `UPDATE friendship SET status = $1 WHERE user_id = $2 AND friend_id = $3 AND status = 'pending' RETURNING *`,
+      ['accepted', friendId, userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Request not found',
+        message: 'No pending request found from this user',
+      });
+    }
+    res.status(200).json({
+      success: true,
+      data: result.rows[0],
+      message: 'Friend Request Accepted Successfully',
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+const rejectRequest = async (req, res, next) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const friendId = parseInt(req.params.friendId);
+
+    const result = await pool.query(
+      `UPDATE friendship SET status = $1 WHERE user_id = $2 AND friend_id = $3 AND status = 'pending' RETURNING *`,
+      ['rejected', friendId, userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Request not found',
+        message: 'No pending request found from this user',
+      });
+    }
+    res.status(200).json({
+      success: true,
+      data: result.rows[0],
+      message: 'Friend Request Rejected Successfully',
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
 module.exports = {
   sendRequest,
+  acceptRequest,
+  rejectRequest,
 };
