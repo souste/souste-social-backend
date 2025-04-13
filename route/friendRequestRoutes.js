@@ -6,6 +6,7 @@ const {
   acceptRequest,
   rejectRequest,
   unfriend,
+  getFriends,
 } = require('../controller/friendRequestController');
 
 router.get('/', getAllFriendships);
@@ -17,7 +18,7 @@ router.patch('/:userId/reject/:friendId', rejectRequest);
 
 router.delete('/:userId/unfriend/:friendId', unfriend);
 
-// router.get('/:id/friends', getFriends);
+router.get('/:id/friends', getFriends);
 // router.get('/:id/pending', getPendingFriends);
 
 module.exports = router;

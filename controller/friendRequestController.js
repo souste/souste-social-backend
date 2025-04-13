@@ -191,10 +191,44 @@ const unfriend = async (req, res, next) => {
   }
 };
 
+const getFriends = async (req, res, next) => {
+  try {
+    const userId = parseInt(req.params.id);
+
+    const friends = await pool.query(
+      `
+      SELECT users.id, users.username, users.first_name, users.last_name,  profile.picture, friendship.created_at as friends_since
+      FROM friendship
+      JOIN users ON ((friendship.user_id = users.id AND friendship.friend_id = $1) OR (friendship.friend_id = users.id AND friendship.user_id = $1))
+      LEFT JOIN profile ON users.id = profile.user_id
+      WHERE friendship.status = 'accepted' AND users.id != $1
+      `,
+      [userId]
+    );
+
+    if (friends.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'User has no friends :-(',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      count: friends.rows.length,
+      data: friends.rows,
+      messsage: 'Friends retrieved successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getAllFriendships,
   sendRequest,
   acceptRequest,
   rejectRequest,
   unfriend,
+  getFriends,
 };
