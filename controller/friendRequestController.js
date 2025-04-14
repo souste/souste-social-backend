@@ -1,8 +1,5 @@
 const pool = require('../db/pool');
 
-// Get Pending Requests
-// Cancel Request
-
 const getAllFriendships = async (req, res, next) => {
   try {
     const result = await pool.query(
@@ -305,6 +302,40 @@ const getFriends = async (req, res, next) => {
   }
 };
 
+const getPendingRequests = async (req, res, next) => {
+  try {
+    const userId = parseInt(req.params.id);
+
+    const pendingRequests = await pool.query(
+      `
+      SELECT users.id, users.username, users.first_name, users.last_name, profile.picture, friendship.created_at
+      FROM friendship
+      JOIN users ON ((friendship.user_id = users.id AND friendship.friend_id = $1) OR (friendship.friend_id = users.id AND friendship.user_id = $1))
+      LEFT JOIN profile ON users.id = profile.user_id
+      WHERE friendship.status = 'pending' AND users.id != $1
+      `,
+      [userId]
+    );
+
+    if (pendingRequests.rows.length === 0) {
+      return res.status(200).json({
+        success: true,
+        count: 0,
+        data: [],
+        message: `User has no pending requests`,
+      });
+    }
+    res.status(200).json({
+      success: true,
+      count: pendingRequests.rows.length,
+      data: pendingRequests.rows,
+      message: 'Pending requests retrieved successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getAllFriendships,
   getFriendStatus,
@@ -314,4 +345,5 @@ module.exports = {
   cancelRequest,
   unfriend,
   getFriends,
+  getPendingRequests,
 };
