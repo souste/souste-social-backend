@@ -15,6 +15,43 @@ const getAllFriendships = async (req, res, next) => {
   }
 };
 
+const getFriendStatus = async (req, res, next) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const friendId = parseInt(req.params.friendId);
+
+    if (userId === friendId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid Request',
+        message: 'You cannot be friends with yourself',
+      });
+    }
+
+    const result = await pool.query(
+      `
+      SELECT * FROM friendship
+      WHERE (user_id = $1 AND friend_id = $2) OR (friend_id = $1 AND user_id = $2)
+      `,
+      [userId, friendId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(200).json({
+        success: true,
+        status: 'none',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      status: result.rows[0].status,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const sendRequest = async (req, res, next) => {
   try {
     const userId = parseInt(req.params.userId);
@@ -165,7 +202,7 @@ const unfriend = async (req, res, next) => {
     }
 
     const friendship = await pool.query(
-      `SELECT * FROM friendship WHERE (user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1) AND status = $3`,
+      `SELECT * FROM friendship WHERE ((user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1)) AND status = $3`,
       [userId, friendId, 'accepted']
     );
 
@@ -207,9 +244,11 @@ const getFriends = async (req, res, next) => {
     );
 
     if (friends.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'User has no friends :-(',
+      return res.status(200).json({
+        success: true,
+        count: 0,
+        data: [],
+        message: 'User has no friends yet',
       });
     }
 
@@ -217,7 +256,7 @@ const getFriends = async (req, res, next) => {
       success: true,
       count: friends.rows.length,
       data: friends.rows,
-      messsage: 'Friends retrieved successfully',
+      message: 'Friends retrieved successfully',
     });
   } catch (err) {
     next(err);
@@ -226,6 +265,7 @@ const getFriends = async (req, res, next) => {
 
 module.exports = {
   getAllFriendships,
+  getFriendStatus,
   sendRequest,
   acceptRequest,
   rejectRequest,

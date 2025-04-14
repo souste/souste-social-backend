@@ -2,6 +2,7 @@ const { Router } = require('express');
 const router = Router();
 const {
   getAllFriendships,
+  getFriendStatus,
   sendRequest,
   acceptRequest,
   rejectRequest,
@@ -10,6 +11,7 @@ const {
 } = require('../controller/friendRequestController');
 
 router.get('/', getAllFriendships);
+router.get('/:userId/status/:friendId', getFriendStatus);
 
 router.post('/:userId/send/:friendId', sendRequest);
 
