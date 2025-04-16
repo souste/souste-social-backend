@@ -142,6 +142,13 @@ const acceptRequest = async (req, res, next) => {
       ['accepted', friendId, userId]
     );
 
+    await pool.query(
+      `
+      UPDATE profile SET friend_count = friend_count + 1 WHERE user_id = $1 or user_id = $2
+      `,
+      [userId, friendId]
+    );
+
     if (result.rows.length === 0) {
       return res.status(404).json({
         success: false,
@@ -256,6 +263,15 @@ const unfriend = async (req, res, next) => {
     await pool.query(`DELETE FROM friendship WHERE id = $1`, [
       friendship.rows[0].id,
     ]);
+
+    await pool.query(
+      `
+      UPDATE profile
+      SET friend_count = GREATEST(friend_count - 1, 0)
+      WHERE user_id = $1 OR user_id = $2
+      `,
+      [userId, friendId]
+    );
 
     res.status(200).json({
       success: true,
