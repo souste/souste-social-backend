@@ -10,6 +10,7 @@ const {
   unfriend,
   getFriends,
   getPendingRequests,
+  getFriendSuggestions,
 } = require('../controller/friendRequestController');
 
 router.get('/', getAllFriendships);
@@ -25,5 +26,6 @@ router.delete('/:userId/unfriend/:friendId', unfriend);
 
 router.get('/:id/friends', getFriends);
 router.get('/:id/pending', getPendingRequests);
+router.get('/:id/suggestions', getFriendSuggestions);
 
 module.exports = router;

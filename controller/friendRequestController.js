@@ -352,6 +352,40 @@ const getPendingRequests = async (req, res, next) => {
   }
 };
 
+const getFriendSuggestions = async (req, res, next) => {
+  try {
+    const userId = parseInt(req.params.id);
+
+    const friendSuggestions = await pool.query(
+      `
+      SELECT profile.*,
+      users.username, users.first_name, users.last_name, users.created_at, friendship.status
+      FROM profile
+      JOIN users on profile.user_id = users.id
+      LEFT JOIN friendship on ((friendship.user_id = profile.user_id AND friendship.friend_id = $1) OR (friendship.friend_id = profile.user_id AND friendship.user_id = $1))
+      WHERE (friendship.status IS NULL OR friendship.status = 'rejected') AND users.id != $1
+      `,
+      [userId]
+    );
+    if (friendSuggestions.rows.length === 0) {
+      return res.status(200).json({
+        success: true,
+        count: 0,
+        data: [],
+        message: 'User has no friend suggestions',
+      });
+    }
+    res.status(200).json({
+      success: true,
+      count: friendSuggestions.rows.length,
+      data: friendSuggestions.rows,
+      message: 'Friend suggestions retrieved successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getAllFriendships,
   getFriendStatus,
@@ -362,4 +396,5 @@ module.exports = {
   unfriend,
   getFriends,
   getPendingRequests,
+  getFriendSuggestions,
 };
