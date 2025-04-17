@@ -326,9 +326,9 @@ const getPendingRequests = async (req, res, next) => {
       `
       SELECT users.id, users.username, users.first_name, users.last_name, profile.picture, friendship.created_at
       FROM friendship
-      JOIN users ON ((friendship.user_id = users.id AND friendship.friend_id = $1) OR (friendship.friend_id = users.id AND friendship.user_id = $1))
+      JOIN users ON friendship.user_id = users.id 
       LEFT JOIN profile ON users.id = profile.user_id
-      WHERE friendship.status = 'pending' AND users.id != $1
+      WHERE friendship.status = 'pending' AND friendship.friend_id = $1
       `,
       [userId]
     );
