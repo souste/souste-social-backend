@@ -2,6 +2,8 @@ const { Router } = require('express');
 const router = Router();
 const {
   getAllPosts,
+  getFriendsPosts,
+  // getOwnPosts,
   getPost,
   createNewPost,
   updatePost,
@@ -10,6 +12,9 @@ const {
 // const auth = require('../middleware/authMiddleware');
 
 router.get('/', getAllPosts);
+router.get('/friends/:userId', getFriendsPosts);
+// router.get('/own', getOwnPosts);
+
 router.get('/:id', getPost);
 router.post('/', createNewPost);
 router.patch('/:id', updatePost);

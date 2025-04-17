@@ -18,6 +18,46 @@ const getAllPosts = async (req, res, next) => {
   }
 };
 
+const getFriendsPosts = async (req, res, next) => {
+  try {
+    const userId = parseInt(req.params.userId);
+
+    const result = await pool.query(
+      `SELECT * FROM (
+       SELECT posts.*, users.username
+       FROM friendship
+       JOIN users ON users.id = friendship.friend_id
+       JOIN posts ON posts.user_id = users.id
+       WHERE friendship.user_id = $1 AND friendship.status = 'accepted'
+       UNION
+       SELECT posts.*, users.username
+       FROM friendship
+       JOIN users ON users.id = friendship.user_id
+       JOIN posts ON posts.user_id = users.id
+       WHERE friendship.friend_id = $1 AND friendship.status = 'accepted'
+       ) AS combined_posts
+       ORDER BY combined_posts.created_at DESC`,
+      [userId]
+    );
+    if (result.rows.length === 0) {
+      return res.status(200).json({
+        success: true,
+        count: 0,
+        data: [],
+        message: 'No posts from friends available',
+      });
+    }
+    res.status(200).json({
+      success: true,
+      count: result.rows.length,
+      data: result.rows,
+      message: 'Friends posts retrieved successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const getPost = async (req, res, next) => {
   try {
     const postId = parseInt(req.params.id);
@@ -130,6 +170,8 @@ const deletePost = async (req, res, next) => {
 
 module.exports = {
   getAllPosts,
+  getFriendsPosts,
+  // getOwnPosts,
   getPost,
   createNewPost,
   updatePost,
