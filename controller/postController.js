@@ -61,7 +61,11 @@ const getOwnPosts = async (req, res, next) => {
     const userId = parseInt(req.params.userId);
 
     const result = await pool.query(
-      `SELECT * FROM posts WHERE user_id = $1 ORDER BY posts.created_at DESC`,
+      `SELECT posts.*, users.username 
+       FROM posts 
+       JOIN users ON posts.user_id = users.id
+       WHERE user_id = $1 
+       ORDER BY posts.created_at DESC`,
       [userId]
     );
     if (result.rows.length === 0) {
