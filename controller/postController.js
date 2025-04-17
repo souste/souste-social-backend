@@ -42,16 +42,38 @@ const getFriendsPosts = async (req, res, next) => {
     if (result.rows.length === 0) {
       return res.status(200).json({
         success: true,
-        count: 0,
         data: [],
         message: 'No posts from friends available',
       });
     }
     res.status(200).json({
       success: true,
-      count: result.rows.length,
       data: result.rows,
       message: 'Friends posts retrieved successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getOwnPosts = async (req, res, next) => {
+  try {
+    const userId = parseInt(req.params.userId);
+
+    const result = await pool.query(`SELECT * FROM posts WHERE user_id = $1`, [
+      userId,
+    ]);
+    if (result.rows.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: [],
+        message: 'No posts from user available',
+      });
+    }
+    res.status(200).json({
+      success: true,
+      data: result.rows,
+      message: 'User posts retrieved successfully',
     });
   } catch (err) {
     next(err);
@@ -171,7 +193,7 @@ const deletePost = async (req, res, next) => {
 module.exports = {
   getAllPosts,
   getFriendsPosts,
-  // getOwnPosts,
+  getOwnPosts,
   getPost,
   createNewPost,
   updatePost,

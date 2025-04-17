@@ -3,7 +3,7 @@ const router = Router();
 const {
   getAllPosts,
   getFriendsPosts,
-  // getOwnPosts,
+  getOwnPosts,
   getPost,
   createNewPost,
   updatePost,
@@ -13,7 +13,7 @@ const {
 
 router.get('/', getAllPosts);
 router.get('/friends/:userId', getFriendsPosts);
-// router.get('/own', getOwnPosts);
+router.get('/own/:userId', getOwnPosts);
 
 router.get('/:id', getPost);
 router.post('/', createNewPost);
