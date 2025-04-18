@@ -12,7 +12,7 @@ const getAllMessages = async (req, res, next) => {
   }
 };
 
-const getConversationWithFriend = async (req, res, next) => {
+const getConversationWithUser = async (req, res, next) => {
   try {
     const userId = parseInt(req.params.userId);
     const friendId = parseInt(req.params.friendId);
@@ -85,7 +85,7 @@ const getMessageById = async (req, res, next) => {
   }
 };
 
-const sendMessageToFriend = async (req, res, next) => {
+const sendMessage = async (req, res, next) => {
   try {
     const userId = parseInt(req.params.userId);
     const friendId = parseInt(req.params.friendId);
@@ -125,9 +125,73 @@ const sendMessageToFriend = async (req, res, next) => {
   }
 };
 
+const updateUserMessage = async (req, res, next) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const messageId = parseInt(req.params.messageId);
+    const { message } = req.body;
+
+    const existingMessage = await pool.query(
+      'SELECT * FROM messages WHERE user_id = $1 AND id = $2',
+      [userId, messageId]
+    );
+
+    if (existingMessage.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Message not found',
+        message: `No message with id ${messageId} found for user ${userId}`,
+      });
+    }
+    const result = await pool.query(
+      `UPDATE messages SET message = $1 WHERE user_id = $2 AND id = $3 RETURNING *`,
+      [message, userId, messageId]
+    );
+    res.status(200).json({
+      success: true,
+      data: result.rows[0],
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const deleteUserMessage = async (req, res, next) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const messageId = parseInt(req.params.messageId);
+
+    const existingMessage = await pool.query(
+      'SELECT * FROM messages WHERE user_id = $1 AND id = $2',
+      [userId, messageId]
+    );
+
+    if (existingMessage.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Message not found',
+        message: `No message with id ${messageId} found for user ${userId}`,
+      });
+    }
+    await pool.query('DELETE FROM messages WHERE user_id = $1 AND id = $2', [
+      userId,
+      messageId,
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: 'Message deleted successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getAllMessages,
-  getConversationWithFriend,
+  getConversationWithUser,
   getMessageById,
-  sendMessageToFriend,
+  sendMessage,
+  updateUserMessage,
+  deleteUserMessage,
 };

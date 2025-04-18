@@ -2,17 +2,19 @@ const { Router } = require('express');
 const router = Router();
 const {
   getAllMessages,
-  getConversationWithFriend,
+  getConversationWithUser,
   getMessageById,
-  sendMessageToFriend,
+  sendMessage,
+  updateUserMessage,
+  deleteUserMessage,
 } = require('../controller/messageController');
 
 router.get('/', getAllMessages);
-router.get('/:userId/conversations/:friendId', getConversationWithFriend);
+router.get('/:userId/conversations/:friendId', getConversationWithUser);
 router.get('/:userId/message/:messageId', getMessageById);
 
-router.post('/:userId/conversations/:friendId', sendMessageToFriend);
-// router.patch('/:userId/messages/:messageId', updateMessageToFriend);
-// router.delete('/:userId/messages/:messageId', deleteMessageToFriend);
+router.post('/:userId/conversations/:friendId', sendMessage);
+router.patch('/:userId/message/:messageId', updateUserMessage);
+router.delete('/:userId/message/:messageId', deleteUserMessage);
 
 module.exports = router;
