@@ -1,10 +1,15 @@
 const { Router } = require('express');
 const router = Router();
-const { sendMessageToFriend } = require('../controller/messageController');
+const {
+  getAllMessages,
+  getConversationWithFriend,
+  getMessageById,
+  sendMessageToFriend,
+} = require('../controller/messageController');
 
-// router.get('/', getAllMessages);
-// router.get('/:userId/conversations/:friendId', getMessagesByFriend);
-// router.get('/:userId/messages/:messageId', getMessageById);
+router.get('/', getAllMessages);
+router.get('/:userId/conversations/:friendId', getConversationWithFriend);
+router.get('/:userId/message/:messageId', getMessageById);
 
 router.post('/:userId/conversations/:friendId', sendMessageToFriend);
 // router.patch('/:userId/messages/:messageId', updateMessageToFriend);
