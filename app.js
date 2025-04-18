@@ -19,7 +19,7 @@ const postRoutes = require('./route/postRoutes');
 const commentRoutes = require('./route/commentRoutes');
 const authRoutes = require('./route/authRoutes');
 const friendRequestRoutes = require('./route/friendRequestRoutes');
-const messageRoutes = require('./routes/messageRoutes');
+const messageRoutes = require('./route/messageRoutes');
 const errorHandler = require('./middleware/errorMiddleware');
 
 app.use('/api/v1/users', userRoutes);
