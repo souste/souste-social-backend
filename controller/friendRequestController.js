@@ -85,11 +85,24 @@ const sendRequest = async (req, res, next) => {
     if (existingFriendship.rows.length > 0) {
       const friendship = existingFriendship.rows[0];
 
-      if (friendship.status === 'accepted') {
+      if (friendship.status === 'rejected') {
+        await pool.query(
+          `
+          UPDATE friendship
+          SET status = 'pending'
+          WHERE (user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1)
+          `,
+          [userId, friendId]
+        );
+        return res.status(200).json({
+          success: true,
+          message: 'Friend request resent',
+        });
+      } else if (friendship.status === 'accepted') {
         return res.status(400).json({
           success: false,
           error: 'Already friends',
-          message: 'You are aready friends with this user',
+          message: 'You are already friends with this user',
         });
       } else if (
         friendship.status === 'pending' &&
@@ -111,10 +124,6 @@ const sendRequest = async (req, res, next) => {
             'This user has already sent you a friend request. Check your pending requests',
         });
       }
-      return res.status(200).json({
-        success: true,
-        message: 'Friend request sent successfully',
-      });
     }
 
     const result = await pool.query(
