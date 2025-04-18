@@ -12,6 +12,13 @@ const getAllMessages = async (req, res, next) => {
   }
 };
 
+// getAllConversations = async (req, res, next) => {
+//     try {
+//         const userId = parseInt(req.params.userId);
+//         const result = await pool.query(`SELECT `)
+//     }
+// }
+
 const getConversationWithUser = async (req, res, next) => {
   try {
     const userId = parseInt(req.params.userId);
@@ -32,7 +39,10 @@ const getConversationWithUser = async (req, res, next) => {
 
     const messages = await pool.query(
       `
-            SELECT * FROM messages 
+            SELECT messages.*,
+            users.username
+            FROM messages 
+            JOIN users on messages.user_id = users.id
             WHERE (user_id = $1 AND friend_id = $2)
             OR (user_id = $2 AND friend_id = $1)
             ORDER BY created_at ASC
@@ -189,6 +199,7 @@ const deleteUserMessage = async (req, res, next) => {
 
 module.exports = {
   getAllMessages,
+  //   getAllConversations,
   getConversationWithUser,
   getMessageById,
   sendMessage,
