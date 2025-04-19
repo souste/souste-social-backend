@@ -54,7 +54,7 @@ const seedDB = async () => {
       (1, 'https://res.cloudinary.com/dbkarqkym/image/upload/v1744198105/souste-social-profile-pics/k1rbq9fpy3xaqb6k81lx.jpg', 
        'Blacksmith''s son turned swordsman. Seeking justice for Skalitz.', 
        'Rattay', '1388-03-15', 'Adventurer', 0),
-      (2, 'https://res.cloudinary.com/dbkarqkym/image/upload/v1744198165/souste-social-profile-pics/bo4akkjtv0mvmsaggfpi.jpg', 
+      (2, 'https://res.cloudinary.com/dbkarqkym/image/upload/v1745065414/souste-social-profile-pics/h7lhysukvqalajemqtv9.jpg', 
        'Noble brat with a bow. I hunt, I feast, I win.', 
        'Rattay', '1390-06-22', 'Nobleman', 0),
       (3, 'https://res.cloudinary.com/dbkarqkym/image/upload/v1744198191/souste-social-profile-pics/ld7y6ttdsfqn29x4vxjg.jpg', 
