@@ -12,12 +12,45 @@ const getAllMessages = async (req, res, next) => {
   }
 };
 
-// getAllConversations = async (req, res, next) => {
-//     try {
-//         const userId = parseInt(req.params.userId);
-//         const result = await pool.query(`SELECT `)
-//     }
-// }
+const getAllConversations = async (req, res, next) => {
+  try {
+    const userId = parseInt(req.params.userId);
+
+    const result = await pool.query(
+      `
+  WITH recent_messages AS (
+  SELECT
+  CASE
+  WHEN user_id = $1 THEN friend_id
+  ELSE user_id
+  END AS other_user_id,
+  MAX(created_at) as latest_message_time
+  FROM messages
+  WHERE user_id = $1 OR friend_id = $1
+  GROUP BY other_user_id
+  )
+  SELECT users.id, users.username, users.first_name, users.last_name, profile.picture,
+  (SELECT message FROM messages
+  WHERE ((user_id = $1 AND friend_id = users.id) OR (user_id = users.id AND friend_id = $1))
+  ORDER BY created_at DESC LIMIT 1) as latest_message,
+  recent_messages.latest_message_time
+  FROM recent_messages
+  JOIN users ON recent_messages.other_user_id = users.id
+  LEFT JOIN profile ON users.id = profile.user_id
+  ORDER BY recent_messages.latest_message_time DESC
+  `,
+      [userId]
+    );
+
+    res.status(200).json({
+      success: true,
+      data: result.rows,
+      message: 'Conversations retrieved successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 const getConversationWithUser = async (req, res, next) => {
   try {
@@ -199,7 +232,7 @@ const deleteUserMessage = async (req, res, next) => {
 
 module.exports = {
   getAllMessages,
-  //   getAllConversations,
+  getAllConversations,
   getConversationWithUser,
   getMessageById,
   sendMessage,
