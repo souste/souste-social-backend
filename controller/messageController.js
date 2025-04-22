@@ -158,9 +158,19 @@ const sendMessage = async (req, res, next) => {
       `INSERT INTO messages (message, user_id, friend_id) VALUES ($1, $2, $3) RETURNING *`,
       [message, userId, friendId]
     );
+
+    const userResult = await pool.query(
+      `SELECT USERNAME FROM users WHERE id = $1,`,
+      [userId]
+    );
+
+    const createdMessage = result.rows[0];
+    createdMessage.username = userResult.rows[0].username;
+
     res.status(201).json({
       success: true,
-      data: result.rows[0],
+      data: createdMessage,
+      message: 'Message Created Successfully',
     });
   } catch (err) {
     console.error(err);
