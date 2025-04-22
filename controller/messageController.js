@@ -160,7 +160,7 @@ const sendMessage = async (req, res, next) => {
     );
 
     const userResult = await pool.query(
-      `SELECT USERNAME FROM users WHERE id = $1,`,
+      `SELECT username FROM users WHERE id = $1`,
       [userId]
     );
 
