@@ -10,7 +10,11 @@ const {
   deletePost,
 } = require('../controller/postController');
 
-const { likePost, unlikePost } = require('../controller/likeController');
+const {
+  likePost,
+  unlikePost,
+  getTotalPostLikes,
+} = require('../controller/likeController');
 // const auth = require('../middleware/authMiddleware');
 
 router.get('/', getAllPosts);
@@ -24,6 +28,7 @@ router.delete('/:id', deletePost);
 
 router.post('/:id/like', likePost);
 router.delete('/:id/unlike', unlikePost);
+router.get('/:id/likes/count', getTotalPostLikes);
 
 // router.get('/', auth, getAllPosts);
 

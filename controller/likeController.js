@@ -83,6 +83,25 @@ const unlikePost = async (req, res, next) => {
   }
 };
 
+const getTotalPostLikes = async (req, res, next) => {
+  try {
+    const postId = parseInt(req.params.id);
+
+    const result = await pool.query(
+      `SELECT COUNT(*) FROM likes WHERE post_id = $1`,
+      [postId]
+    );
+
+    res.status(200).json({
+      success: true,
+      count: parseInt(result.rows[0].count),
+      message: 'Post likes count retrieved successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const likeComment = async (req, res, next) => {
   try {
     const postId = parseInt(req.params.postId);
@@ -168,9 +187,44 @@ const unlikeComment = async (req, res, next) => {
   }
 };
 
+const getTotalCommentLikes = async (req, res, next) => {
+  try {
+    const postId = parseInt(req.params.postId);
+    const commentId = parseInt(req.params.commentId);
+
+    const commentCheck = await pool.query(
+      `SELECT * FROM comments WHERE id = $1 AND post_id = $2`,
+      [commentId, postId]
+    );
+
+    if (commentCheck.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Not found',
+        message: `Comment with ID ${commentId} not found for post ${postId}`,
+      });
+    }
+
+    const result = await pool.query(
+      `SELECT COUNT(*) from likes WHERE comment_id = $1`,
+      [commentId]
+    );
+
+    res.status(200).json({
+      success: true,
+      count: parseInt(result.rows[0].count),
+      message: 'Comment like count retrieved successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   likePost,
   unlikePost,
+  getTotalPostLikes,
   likeComment,
   unlikeComment,
+  getTotalCommentLikes,
 };
