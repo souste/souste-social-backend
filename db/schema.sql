@@ -58,6 +58,21 @@ CREATE TABLE messages (
     parent_message_id INTEGER REFERENCES messages(id) ON DELETE CASCADE DEFAULT NULL
 );
 
+CREATE TABLE likes (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY, 
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
+    post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE NULL,
+    comment_id INTEGER REFERENCES comments(id) ON DELETE CASCADE NULL,
+    created_at TIMESTAMP DEFAULT CURRENT TIMESTAMP,
+    CONSTRAINT like_target_check CHECK (
+        (post_id IS NULL AND comment_id IS NOT NULL) OR
+        (post_is IS NOT NULL AND comment_id IS NULL)
+    ),
+    UNIQUE(user_id, post_id),
+    UNIQUE(used_id, comment_id)
+    
+)
+
 
 
 
