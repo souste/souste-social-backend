@@ -14,4 +14,7 @@ router.post('/', createNewCommentByPost);
 router.patch('/:id', updateCommentByPost);
 router.delete('/:id', deleteCommentByPost);
 
+router.post('/:commentId/like', likeComment);
+router.post('/:commentId/unlike', unlikeComment);
+
 module.exports = router;

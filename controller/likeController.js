@@ -1,0 +1,89 @@
+const pool = require('../db/pool');
+
+const likePost = async (req, res, next) => {
+  try {
+    const postId = parseInt(req.params.id);
+    const userId = req.user.id;
+
+    const checkPost = await pool.query('SELECT * FROM posts WHERE id = $1', [
+      postId,
+    ]);
+
+    if (checkPost.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Post not found',
+        message: `No post found with id ${postId}`,
+      });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO likes (postId, userId) VALUES ($1, $2) RETURNING *`,
+      [postId, userId]
+    );
+
+    res.status(201).json({
+      success: true,
+      data: result.rows[0],
+      message: 'Post Liked Successfully',
+    });
+  } catch (err) {
+    if (err.code === '23505') {
+      return res.status(400).json({
+        success: false,
+        message: 'You have already liked this post',
+      });
+    }
+    next(err);
+  }
+};
+
+const unlikePost = async (req, res, next) => {
+  try {
+    const postId = parseInt(req.params.id);
+    const userId = req.user.id;
+
+    const checkPost = await pool.query('SELECT * FROM posts WHERE id = $1', [
+      postId,
+    ]);
+
+    if (checkPost.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Post not found',
+        message: `No post found with id ${postId}`,
+      });
+    }
+
+    const checkLike = await pool.query(
+      'SELECT * FROM likes where post_id = $1 AND user_id = $2',
+      [postId, userId]
+    );
+
+    if (checkLike.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Like not found',
+        message: `Post ${postId} has not been liked by user ${userId}`,
+      });
+    }
+
+    await pool.query('DELETE FROM likes WHERE post_id = $1 AND user_id = $2', [
+      postId,
+      userId,
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: 'Like removed successfully',
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+module.exports = {
+  likePost,
+  unlikePost,
+};
