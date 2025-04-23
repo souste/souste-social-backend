@@ -18,7 +18,7 @@ const likePost = async (req, res, next) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO likes (postId, userId) VALUES ($1, $2) RETURNING *`,
+      `INSERT INTO likes (post_id, user_id) VALUES ($1, $2) RETURNING *`,
       [postId, userId]
     );
 
@@ -64,7 +64,7 @@ const unlikePost = async (req, res, next) => {
       return res.status(404).json({
         success: false,
         error: 'Like not found',
-        message: `Post ${postId} has not been liked by user ${userId}`,
+        message: `You have not liked this post`,
       });
     }
 
@@ -83,7 +83,94 @@ const unlikePost = async (req, res, next) => {
   }
 };
 
+const likeComment = async (req, res, next) => {
+  try {
+    const postId = parseInt(req.params.postId);
+    const commentId = parseInt(req.params.commentId);
+    const userId = req.user.id;
+
+    const commentCheck = await pool.query(
+      'SELECT * FROM comments WHERE id = $1 AND post_id = $2',
+      [commentId, postId]
+    );
+
+    if (commentCheck.rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Not Found',
+        message: `Comment with ID ${commentId} not found for post ${postId}`,
+      });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO likes (comment_id, user_id) VALUES ($1, $2) RETURNING *`,
+      [commentId, userId]
+    );
+    res.status(201).json({
+      success: true,
+      data: result.rows[0],
+      message: 'Comment liked Successfully',
+    });
+  } catch (err) {
+    if (err.code === '23505') {
+      return res.status(400).json({
+        success: false,
+        message: 'You have already liked this comment',
+      });
+    }
+    next(err);
+  }
+};
+
+const unlikeComment = async (req, res, next) => {
+  try {
+    const postId = parseInt(req.params.postId);
+    const commentId = parseInt(req.params.commentId);
+    const userId = req.user.id;
+
+    const commentCheck = await pool.query(
+      'SELECT * FROM comments WHERE id = $1 AND post_id = $2',
+      [commentId, postId]
+    );
+
+    if (commentCheck.rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Not Found',
+        message: `Comment with ID ${commentId} not found for post ${postId}`,
+      });
+    }
+
+    const checkLike = await pool.query(
+      'SELECT * FROM likes where comment_id = $1 AND user_id = $2',
+      [commentId, userId]
+    );
+
+    if (checkLike.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Like not found',
+        message: `You have not liked this comment`,
+      });
+    }
+
+    await pool.query(
+      `DELETE FROM likes WHERE comment_id = $1 AND user_id = $2`,
+      [commentId, userId]
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Like removed successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   likePost,
   unlikePost,
+  likeComment,
+  unlikeComment,
 };

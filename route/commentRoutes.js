@@ -8,6 +8,8 @@ const {
   deleteCommentByPost,
 } = require('../controller/commentController');
 
+const { likeComment, unlikeComment } = require('../controller/likeController');
+
 router.get('/', getAllCommentsByPost);
 router.get('/:id', getCommentByPost);
 router.post('/', createNewCommentByPost);
@@ -15,6 +17,6 @@ router.patch('/:id', updateCommentByPost);
 router.delete('/:id', deleteCommentByPost);
 
 router.post('/:commentId/like', likeComment);
-router.post('/:commentId/unlike', unlikeComment);
+router.delete('/:commentId/unlike', unlikeComment);
 
 module.exports = router;
