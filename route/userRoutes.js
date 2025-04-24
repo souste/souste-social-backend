@@ -12,16 +12,18 @@ const {
   getAllProfiles,
 } = require('../controller/userController');
 
-router.get('/', getAllUsers);
-router.get('/profile', getAllProfiles);
+const auth = require('../middleware/authMiddleware');
 
-router.get('/:id', getUser);
-router.patch('/:id', updateUser);
-router.delete('/:id', deleteUser);
+router.get('/', auth, getAllUsers);
+router.get('/profile', auth, getAllProfiles);
 
-router.get('/:id/profile', getProfile);
-router.patch(`/:id/profile`, updateProfile);
+router.get('/:id', auth, getUser);
+router.patch('/:id', auth, updateUser);
+router.delete('/:id', auth, deleteUser);
 
-router.post('/:id/profile/image', uploadMiddleware, uploadProfileImage);
+router.get('/:id/profile', auth, getProfile);
+router.patch(`/:id/profile`, auth, updateProfile);
+
+router.post('/:id/profile/image', auth, uploadMiddleware, uploadProfileImage);
 
 module.exports = router;

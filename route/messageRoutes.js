@@ -10,13 +10,15 @@ const {
   deleteUserMessage,
 } = require('../controller/messageController');
 
-router.get('/', getAllMessages);
-router.get('/:userId/conversation', getAllConversations);
-router.get('/:userId/conversation/:friendId', getConversationWithUser);
-router.get('/:userId/message/:messageId', getMessageById);
+const auth = require('../middleware/authMiddleware');
 
-router.post('/:userId/conversation/:friendId', sendMessage);
-router.patch('/:userId/message/:messageId', updateUserMessage);
-router.delete('/:userId/message/:messageId', deleteUserMessage);
+router.get('/', auth, getAllMessages);
+router.get('/:userId/conversation', auth, getAllConversations);
+router.get('/:userId/conversation/:friendId', auth, getConversationWithUser);
+router.get('/:userId/message/:messageId', auth, getMessageById);
+
+router.post('/:userId/conversation/:friendId', auth, sendMessage);
+router.patch('/:userId/message/:messageId', auth, updateUserMessage);
+router.delete('/:userId/message/:messageId', auth, deleteUserMessage);
 
 module.exports = router;

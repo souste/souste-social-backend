@@ -15,21 +15,19 @@ const {
   unlikePost,
   getTotalPostLikes,
 } = require('../controller/likeController');
-// const auth = require('../middleware/authMiddleware');
+const auth = require('../middleware/authMiddleware');
 
-router.get('/', getAllPosts);
-router.get('/friends/:userId', getFriendsPosts);
-router.get('/own/:userId', getOwnPosts);
+router.get('/', auth, getAllPosts);
+router.get('/friends/:userId', auth, getFriendsPosts);
+router.get('/own/:userId', auth, getOwnPosts);
 
-router.get('/:id', getPost);
-router.post('/', createNewPost);
-router.patch('/:id', updatePost);
-router.delete('/:id', deletePost);
+router.get('/:id', auth, getPost);
+router.post('/', auth, createNewPost);
+router.patch('/:id', auth, updatePost);
+router.delete('/:id', auth, deletePost);
 
-router.post('/:id/like', likePost);
-router.delete('/:id/unlike', unlikePost);
-router.get('/:id/likes/count', getTotalPostLikes);
-
-// router.get('/', auth, getAllPosts);
+router.post('/:id/like', auth, likePost);
+router.delete('/:id/unlike', auth, unlikePost);
+router.get('/:id/likes/count', auth, getTotalPostLikes);
 
 module.exports = router;

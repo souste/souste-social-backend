@@ -14,14 +14,16 @@ const {
   getTotalCommentLikes,
 } = require('../controller/likeController');
 
-router.get('/', getAllCommentsByPost);
-router.get('/:id', getCommentByPost);
-router.post('/', createNewCommentByPost);
-router.patch('/:id', updateCommentByPost);
-router.delete('/:id', deleteCommentByPost);
+const auth = require('../middleware/authMiddleware');
 
-router.post('/:commentId/like', likeComment);
-router.delete('/:commentId/unlike', unlikeComment);
-router.get('/:commentId/likes/count', getTotalCommentLikes);
+router.get('/', auth, getAllCommentsByPost);
+router.get('/:id', auth, getCommentByPost);
+router.post('/', auth, createNewCommentByPost);
+router.patch('/:id', auth, updateCommentByPost);
+router.delete('/:id', auth, deleteCommentByPost);
+
+router.post('/:commentId/like', auth, likeComment);
+router.delete('/:commentId/unlike', auth, unlikeComment);
+router.get('/:commentId/likes/count', auth, getTotalCommentLikes);
 
 module.exports = router;
