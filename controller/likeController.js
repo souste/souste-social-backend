@@ -86,15 +86,23 @@ const unlikePost = async (req, res, next) => {
 const getTotalPostLikes = async (req, res, next) => {
   try {
     const postId = parseInt(req.params.id);
+    const userId = req.user.id;
 
     const result = await pool.query(
-      `SELECT COUNT(*) FROM likes WHERE post_id = $1`,
-      [postId]
+      `SELECT COUNT(*) AS like_count,
+      EXISTS (
+      SELECT 1
+      FROM likes
+      WHERE user_id = $1 AND post_id = $2
+      ) AS liked_by_user
+      FROM likes WHERE post_id = $2`,
+      [userId, postId]
     );
 
     res.status(200).json({
       success: true,
       count: parseInt(result.rows[0].count),
+      liked_by_user: result.rows[0].liked_by_user,
       message: 'Post likes count retrieved successfully',
     });
   } catch (err) {
@@ -114,7 +122,7 @@ const likeComment = async (req, res, next) => {
     );
 
     if (commentCheck.rows.length === 0) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
         error: 'Not Found',
         message: `Comment with ID ${commentId} not found for post ${postId}`,
@@ -191,6 +199,7 @@ const getTotalCommentLikes = async (req, res, next) => {
   try {
     const postId = parseInt(req.params.postId);
     const commentId = parseInt(req.params.commentId);
+    const userId = req.user.id;
 
     const commentCheck = await pool.query(
       `SELECT * FROM comments WHERE id = $1 AND post_id = $2`,
@@ -206,13 +215,20 @@ const getTotalCommentLikes = async (req, res, next) => {
     }
 
     const result = await pool.query(
-      `SELECT COUNT(*) from likes WHERE comment_id = $1`,
-      [commentId]
+      `SELECT COUNT(*) AS like_count,
+      EXISTS (
+      SELECT 1
+      FROM likes
+      WHERE user_id =$1 AND comment_id = $2
+      ) AS liked_by_user
+      from likes WHERE comment_id = $2`,
+      [userId, commentId]
     );
 
     res.status(200).json({
       success: true,
       count: parseInt(result.rows[0].count),
+      liked_by_user: result.rows[0].liked_by_user,
       message: 'Comment like count retrieved successfully',
     });
   } catch (err) {
