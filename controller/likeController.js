@@ -102,7 +102,7 @@ const getTotalPostLikes = async (req, res, next) => {
     res.status(200).json({
       success: true,
       count: parseInt(result.rows[0].count),
-      likedByUser: result.rows[0].likedByUser,
+      likedByUser: result.rows[0].liked_by_user,
       message: 'Post likes count retrieved successfully',
     });
   } catch (err) {
@@ -228,7 +228,7 @@ const getTotalCommentLikes = async (req, res, next) => {
     res.status(200).json({
       success: true,
       count: parseInt(result.rows[0].count),
-      likedByUser: result.rows[0].likedByUser,
+      likedByUser: result.rows[0].liked_by_user,
       message: 'Comment like count retrieved successfully',
     });
   } catch (err) {
