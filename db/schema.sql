@@ -73,6 +73,22 @@ CREATE TABLE likes (
     
 );
 
+CREATE TABLE notifications (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    recipient_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    sender_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    type VARCHAR(50) NOT NULL,
+    content TEXT,
+    reference_id INTEGER,
+    reference_type VARCHAR(50),
+    status VARCHAR(20) DEFAULT 'unread' CHECK (status IN ('unread', 'read', 'dismissed')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT valid_reference_type CHECK (reference_type IN ('post', 'comment', 'message', 'friend_request'))
+);
+
+CREATE INDEX idx_notifications_recipient_id_created_at ON notifications(recipient_id, created_at DESC);
+
 
 
 
