@@ -28,6 +28,6 @@ router.delete('/:id', auth, deletePost);
 
 router.post('/:id/like', auth, likePost);
 router.delete('/:id/unlike', auth, unlikePost);
-router.get('/:id/likes/count', getTotalPostLikes);
+router.get('/:id/likes/count', auth, getTotalPostLikes);
 
 module.exports = router;

@@ -88,8 +88,20 @@ const getTotalPostLikes = async (req, res, next) => {
     const postId = parseInt(req.params.id);
     const userId = req.user.id;
 
+    const checkPost = await pool.query('SELECT * FROM posts WHERE id = $1', [
+      postId,
+    ]);
+
+    if (checkPost.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Post not found',
+        message: `No post found with id ${postId}`,
+      });
+    }
+
     const result = await pool.query(
-      `SELECT COUNT(*)::INT AS like_count,
+      `SELECT COUNT(*) AS like_count,
       EXISTS (
       SELECT 1
       FROM likes
@@ -161,7 +173,7 @@ const unlikeComment = async (req, res, next) => {
     );
 
     if (commentCheck.rows.length === 0) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
         error: 'not_found',
         message: `Comment with ID ${commentId} not found for post ${postId}`,
@@ -215,7 +227,7 @@ const getTotalCommentLikes = async (req, res, next) => {
     }
 
     const result = await pool.query(
-      `SELECT COUNT(*)::INT AS like_count,
+      `SELECT COUNT(*) AS like_count,
       EXISTS (
       SELECT 1
       FROM likes
