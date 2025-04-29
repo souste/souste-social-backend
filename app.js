@@ -20,6 +20,7 @@ const commentRoutes = require('./route/commentRoutes');
 const authRoutes = require('./route/authRoutes');
 const friendRequestRoutes = require('./route/friendRequestRoutes');
 const messageRoutes = require('./route/messageRoutes');
+const notificationRoutes = require('./route/notificationRoutes');
 const errorHandler = require('./middleware/errorMiddleware');
 
 app.use('/api/v1/users', userRoutes);
@@ -28,6 +29,7 @@ app.use('/api/v1/posts/:postId/comments', commentRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/friendRequest', friendRequestRoutes);
 app.use('/api/v1/messages', messageRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
 app.use((req, res, next) => {
   const error = new Error(`Route not found = ${req.originalUrl}`);
   error.statusCode = 404;
