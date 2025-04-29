@@ -1,8 +1,8 @@
 const { Router } = require('express');
 const router = Router();
 const {
-  //   getAllNotificationsForUser,
-  //   getUnreadNotifications,
+  getAllNotificationsForUser,
+  getUnreadNotificationsForUser,
   createNotification,
   //   readNotification,
   //   readAllNotifications,
@@ -10,8 +10,8 @@ const {
   //   deleteAllNotifications,
 } = require('../controller/notificationController');
 
-// router.get('/:recipientId', getAllNotificationsForUser);
-// router.get('/:recipientId', getUnreadNotifications);
+router.get('/:recipientId', getAllNotificationsForUser);
+router.get('/:recipientId/unread', getUnreadNotificationsForUser);
 
 router.post('/:recipientId', createNotification);
 
