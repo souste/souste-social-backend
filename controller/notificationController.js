@@ -159,12 +159,82 @@ const createNotification = async (req, res, next) => {
   }
 };
 
+const readNotification = async (req, res, next) => {
+  try {
+    const notificationId = parseInt(req.params.notificationId);
+
+    const existingNotification = await pool.query(
+      `SELECT * FROM notifications WHERE id = $1`,
+      [notificationId]
+    );
+
+    if (existingNotification.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Notification not found',
+        message: `No notification with id ${notificationId}`,
+      });
+    }
+
+    const result = await pool.query(
+      `UPDATE notifications SET is_read = TRUE WHERE id = $1 RETURNING *`,
+      [notificationId]
+    );
+    res.status(200).json({
+      success: true,
+      message: 'Notification marked as read',
+      notification: result.rows[0],
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const readAllNotificationsForUser = async (req, res, next) => {
+  try {
+    const recipientId = parseInt(req.params.recipientId);
+
+    const recipientCheck = await pool.query(
+      `SELECT * FROM users WHERE id = $1`,
+      [recipientId]
+    );
+    if (recipientCheck.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Recipient Not Found',
+        message: `No recipient found with id ${recipientId}`,
+      });
+    }
+
+    const result = await pool.query(
+      `UPDATE notifications SET is_read = TRUE WHERE recipient_id = $1 AND is_read = FALSE RETURNING *`,
+      [recipientId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: `No unread notifications for recipient ${recipientId}`,
+        notifications: [],
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `All notifications marked as read for recipient ${recipientId}`,
+      notifications: result.rows,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getAllNotificationsForUser,
   getUnreadNotificationsForUser,
   createNotification,
-  //   readNotification,
-  //   readAllNotifications,
+  readNotification,
+  readAllNotificationsForUser,
   //   deleteNotification,
   //   deleteAllNotifications,
 };

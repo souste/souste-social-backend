@@ -4,8 +4,8 @@ const {
   getAllNotificationsForUser,
   getUnreadNotificationsForUser,
   createNotification,
-  //   readNotification,
-  //   readAllNotifications,
+  readNotification,
+  readAllNotificationsForUser,
   //   deleteNotification,
   //   deleteAllNotifications,
 } = require('../controller/notificationController');
@@ -15,8 +15,8 @@ router.get('/:recipientId/unread', getUnreadNotificationsForUser);
 
 router.post('/:recipientId', createNotification);
 
-// router.patch('/:notificationId/read', readNotification);
-// router.patch('./notifications/read-all', readAllNotifications);
+router.patch('/:notificationId/read', readNotification);
+router.patch('/:recipientId/read-all', readAllNotificationsForUser);
 
 // router.delete('/:notificationId', deleteNotification);
 // router.delete('.reciprientId', deleteAllNotifications);
