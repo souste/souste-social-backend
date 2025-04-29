@@ -229,12 +229,73 @@ const readAllNotificationsForUser = async (req, res, next) => {
   }
 };
 
+const deleteNotification = async (req, res, next) => {
+  try {
+    const notificationId = parseInt(req.params.notificationId);
+
+    const result = await pool.query(`DELETE FROM notifications WHERE id = $1`, [
+      notificationId,
+    ]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Notification not found',
+        message: `No notification with id ${notificationId}`,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Notification deleted successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const deleteAllNotificationsForUser = async (req, res, next) => {
+  try {
+    const recipientId = parseInt(req.params.recipientId);
+
+    const recipientCheck = await pool.query(
+      `SELECT * FROM users WHERE id = $1`,
+      [recipientId]
+    );
+    if (recipientCheck.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Recipient Not Found',
+        message: `No recipient found with id ${recipientId}`,
+      });
+    }
+
+    const result = await pool.query(
+      `DELETE FROM notifications WHERE recipient_id = $1`,
+      [recipientId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(200).json({
+        success: true,
+        message: `No existing notifications for recipient ${recipientId}`,
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: `All notifications deleted for recipient ${recipientId}`,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getAllNotificationsForUser,
   getUnreadNotificationsForUser,
   createNotification,
   readNotification,
   readAllNotificationsForUser,
-  //   deleteNotification,
-  //   deleteAllNotifications,
+  deleteNotification,
+  deleteAllNotificationsForUser,
 };
