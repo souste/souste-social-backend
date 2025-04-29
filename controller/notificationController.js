@@ -1,7 +1,85 @@
 const pool = require('../db/pool');
 
-const createNewNotification = async (req, res, next) => {};
+const createNotification = async (req, res, next) => {
+  try {
+    const recipientId = parseInt(req.params.recipientId);
+    const senderId = req.user.id;
+    const { type, referenceId, message } = req.body;
+
+    const validTypes = [
+      'post',
+      'comment',
+      'message',
+      'friend_request',
+      'friend_accept',
+      'like_post',
+      'like_comment',
+    ];
+
+    if (!type || !validTypes.includes(type)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid parameters',
+        message: `Notification type is required and must be one of ${validTypes.join(', ')}`,
+      });
+    }
+
+    const recipientCheck = await pool.query(
+      `SELECT * FROM users WHERE id = $1`,
+      [recipientId]
+    );
+    if (recipientCheck.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Recipient Not Found',
+        message: `No recipient found with id ${recipientId}`,
+      });
+    }
+
+    const senderCheck = await pool.query(`SELECT * FROM users WHERE id = $1`, [
+      senderId,
+    ]);
+    if (senderCheck.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Sender Not Found',
+        message: `No Sender found with id ${senderId}`,
+      });
+    }
+
+    if (!recipientId || !referenceId || !message) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing fields',
+        message: 'recipientId, referenceId and message are required',
+      });
+    }
+
+    if (recipientId === senderId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid Action',
+        message: 'Users cannot sent notifications to themselves',
+      });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO notifications(type, reference_id, message, recipient_id, sender_id) 
+       VALUES ($1, $2, $3, $4, $5) 
+       RETURNING *`,
+      [type, referenceId, message, recipientId, senderId]
+    );
+
+    return res.status(201).json({
+      success: true,
+      notification: result.rows[0],
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
 
 module.exports = {
-  createNewNotification,
+  createNotification,
 };
