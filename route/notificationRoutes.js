@@ -10,15 +10,17 @@ const {
   deleteAllNotificationsForUser,
 } = require('../controller/notificationController');
 
-router.get('/:recipientId', getAllNotificationsForUser);
-router.get('/:recipientId/unread', getUnreadNotificationsForUser);
+const auth = require('../middleware/authMiddleware');
 
-router.post('/:recipientId', createNotification);
+router.get('/:recipientId', auth, getAllNotificationsForUser);
+router.get('/:recipientId/unread', auth, getUnreadNotificationsForUser);
 
-router.patch('/:notificationId/read', readNotification);
-router.patch('/:recipientId/read-all', readAllNotificationsForUser);
+router.post('/:recipientId', auth, createNotification);
 
-router.delete('/:notificationId', deleteNotification);
-router.delete('/user/:recipientId', deleteAllNotificationsForUser);
+router.patch('/:notificationId/read', auth, readNotification);
+router.patch('/:recipientId/read-all', auth, readAllNotificationsForUser);
+
+router.delete('/:notificationId', auth, deleteNotification);
+router.delete('/user/:recipientId', auth, deleteAllNotificationsForUser);
 
 module.exports = router;
