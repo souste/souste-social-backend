@@ -17,7 +17,10 @@ const getAllNotificationsForUser = async (req, res, next) => {
     }
 
     const result = await pool.query(
-      `SELECT * FROM notifications WHERE recipient_id = $1 ORDER BY created_at DESC`,
+      `SELECT notifications.*, profile.picture
+      FROM notifications
+      LEFT JOIN profile ON notifications.sender_id = profile.user_id
+      WHERE recipient_id = $1 ORDER BY created_at DESC`,
       [recipientId]
     );
 
@@ -56,7 +59,9 @@ const getUnreadNotificationsForUser = async (req, res, next) => {
 
     const result = await pool.query(
       `
-            SELECT * FROM notifications 
+            SELECT notifications.*, profile.picture
+            FROM notifications 
+            LEFT JOIN profile ON notifications.sender_id = profile.user_id
             WHERE recipient_id = $1 AND is_read = false 
             ORDER BY created_at DESC `,
       [recipientId]
