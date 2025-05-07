@@ -211,7 +211,7 @@ const uploadProfileImage = async (req, res, next) => {
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        error: 'No image file provides',
+        error: 'No image file provided',
       });
     }
 

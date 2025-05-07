@@ -1,4 +1,7 @@
 const pool = require('../db/pool');
+const { uploadImagePost } = require('../config/cloudinary');
+
+const uploadMiddleware = uploadImagePost.single('image');
 
 const getAllPosts = async (req, res, next) => {
   try {
@@ -109,8 +112,6 @@ const getPost = async (req, res, next) => {
   }
 };
 
-// can take user_id out of req.body once I'm using JWT web token
-
 const createNewPost = async (req, res, next) => {
   try {
     const { content, user_id } = req.body;
@@ -195,6 +196,47 @@ const deletePost = async (req, res, next) => {
   }
 };
 
+const uploadPostImage = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: 'No image file provided',
+      });
+    }
+
+    const postId = parseInt(req.params.id);
+
+    const checkPost = await pool.query('SELECT * FROM posts WHERE id = $1', [
+      postId,
+    ]);
+
+    if (checkPost.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Post not found',
+        message: `No post found with id ${postId}`,
+      });
+    }
+
+    const result = await pool.query(
+      `UPDATE posts SET image = $1 WHERE id = $2 returning *`,
+      [req.file.path, postId]
+    );
+
+    res.status(200).json({
+      success: true,
+      data: {
+        image: result.rows[0].image,
+      },
+      message: 'Post Image Uploaded Successfully',
+    });
+  } catch (err) {
+    console.error('Error uploading post image', err);
+    next(err);
+  }
+};
+
 module.exports = {
   getAllPosts,
   getFriendsPosts,
@@ -203,4 +245,6 @@ module.exports = {
   createNewPost,
   updatePost,
   deletePost,
+  uploadMiddleware,
+  uploadPostImage,
 };

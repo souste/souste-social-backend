@@ -8,6 +8,8 @@ const {
   createNewPost,
   updatePost,
   deletePost,
+  uploadMiddleware,
+  uploadPostImage,
 } = require('../controller/postController');
 
 const {
@@ -25,6 +27,8 @@ router.get('/:id', auth, getPost);
 router.post('/', auth, createNewPost);
 router.patch('/:id', auth, updatePost);
 router.delete('/:id', auth, deletePost);
+
+router.post('/:id/image', uploadMiddleware, uploadPostImage);
 
 router.post('/:id/like', auth, likePost);
 router.delete('/:id/unlike', auth, unlikePost);

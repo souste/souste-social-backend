@@ -18,6 +18,16 @@ const storage = new CloudinaryStorage({
   },
 });
 
-const upload = multer({ storage: storage });
+const postImageStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'souste-social-post-images',
+    allowed_formats: ['jpg', 'png', 'jpeg', 'gif'],
+    transformation: [{ width: 500, height: 500, crop: 'limit' }],
+  },
+});
 
-module.exports = { cloudinary, upload };
+const upload = multer({ storage: storage });
+const uploadImagePost = multer({ storage: postImageStorage });
+
+module.exports = { cloudinary, upload, uploadImagePost };
