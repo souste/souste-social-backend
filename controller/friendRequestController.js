@@ -40,12 +40,26 @@ const getFriendStatus = async (req, res, next) => {
       return res.status(200).json({
         success: true,
         status: 'none',
+        direction: null,
       });
+    }
+
+    const friendship = result.rows[0];
+
+    let direction = null;
+    if (friendship.status === 'pending') {
+      if (friendship.user_id === userId) {
+        direction = 'sent';
+      } else {
+        direction = 'received';
+      }
     }
 
     res.status(200).json({
       success: true,
-      status: result.rows[0].status,
+      status: friendship.status,
+      direction: direction,
+      friendshipId: friendship.id,
     });
   } catch (err) {
     next(err);
