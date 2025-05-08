@@ -115,17 +115,23 @@ const getPost = async (req, res, next) => {
 const createNewPost = async (req, res, next) => {
   try {
     const { content, user_id } = req.body;
+    let imagePath = null;
 
-    if (!content) {
+    if (!content && !req.file) {
       return res.status(400).json({
         success: false,
         error: 'Bad Request',
-        message: 'This post is empty',
+        message: 'Post must either contain text content or an image',
       });
     }
+
+    if (req.file) {
+      imagePath = req.file.path;
+    }
+
     const result = await pool.query(
-      `INSERT INTO posts (content, user_id) VALUES ($1, $2) RETURNING *`,
-      [content, user_id]
+      `INSERT INTO posts (content, user_id, image) VALUES ($1, $2, $3) RETURNING *`,
+      [content, user_id, imagePath]
     );
 
     res.status(201).json({

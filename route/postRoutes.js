@@ -24,11 +24,11 @@ router.get('/friends/:userId', auth, getFriendsPosts);
 router.get('/own/:userId', auth, getOwnPosts);
 
 router.get('/:id', auth, getPost);
-router.post('/', auth, createNewPost);
+router.post('/', auth, uploadMiddleware, createNewPost);
 router.patch('/:id', auth, updatePost);
 router.delete('/:id', auth, deletePost);
 
-router.post('/:id/image', uploadMiddleware, uploadPostImage);
+router.post('/:id/image', auth, uploadMiddleware, uploadPostImage);
 
 router.post('/:id/like', auth, likePost);
 router.delete('/:id/unlike', auth, unlikePost);
