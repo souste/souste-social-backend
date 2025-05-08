@@ -19,13 +19,13 @@ const {
 } = require('../controller/likeController');
 const auth = require('../middleware/authMiddleware');
 
-router.get('/', auth, getAllPosts);
+router.get('/', getAllPosts);
 router.get('/friends/:userId', auth, getTimelinePosts);
 router.get('/own/:userId', auth, getOwnPosts);
 
 router.get('/:id', auth, getPost);
 router.post('/', auth, uploadMiddleware, createNewPost);
-router.patch('/:id', auth, updatePost);
+router.patch('/:id', uploadMiddleware, updatePost);
 router.delete('/:id', auth, deletePost);
 
 router.post('/:id/image', auth, uploadMiddleware, uploadPostImage);

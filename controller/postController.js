@@ -158,7 +158,7 @@ const createNewPost = async (req, res, next) => {
 const updatePost = async (req, res, next) => {
   try {
     const postId = parseInt(req.params.id);
-    const { content } = req.body;
+    const { content, image } = req.body;
 
     const checkPost = await pool.query('SELECT * FROM posts WHERE id = $1', [
       postId,
@@ -172,8 +172,8 @@ const updatePost = async (req, res, next) => {
       });
     }
     const result = await pool.query(
-      'UPDATE posts SET content = $1 WHERE id = $2 RETURNING *',
-      [content, postId]
+      'UPDATE posts SET content = $1, image = $2 WHERE id = $3 RETURNING *',
+      [content, image, postId]
     );
 
     res.status(200).json({
