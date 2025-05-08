@@ -2,7 +2,7 @@ const { Router } = require('express');
 const router = Router();
 const {
   getAllPosts,
-  getFriendsPosts,
+  getTimelinePosts,
   getOwnPosts,
   getPost,
   createNewPost,
@@ -20,7 +20,7 @@ const {
 const auth = require('../middleware/authMiddleware');
 
 router.get('/', auth, getAllPosts);
-router.get('/friends/:userId', auth, getFriendsPosts);
+router.get('/friends/:userId', auth, getTimelinePosts);
 router.get('/own/:userId', auth, getOwnPosts);
 
 router.get('/:id', auth, getPost);

@@ -21,7 +21,7 @@ const getAllPosts = async (req, res, next) => {
   }
 };
 
-const getFriendsPosts = async (req, res, next) => {
+const getTimelinePosts = async (req, res, next) => {
   try {
     const userId = parseInt(req.params.userId);
 
@@ -32,12 +32,23 @@ const getFriendsPosts = async (req, res, next) => {
        JOIN users ON users.id = friendship.friend_id
        JOIN posts ON posts.user_id = users.id
        WHERE friendship.user_id = $1 AND friendship.status = 'accepted'
+
        UNION
+
        SELECT posts.*, users.username
        FROM friendship
        JOIN users ON users.id = friendship.user_id
        JOIN posts ON posts.user_id = users.id
        WHERE friendship.friend_id = $1 AND friendship.status = 'accepted'
+
+       UNION
+
+       SELECT posts.*, users.username 
+       FROM posts 
+       JOIN users ON posts.user_id = users.id
+       WHERE posts.user_id = $1 
+
+
        ) AS combined_posts
        ORDER BY combined_posts.created_at DESC`,
       [userId]
@@ -245,7 +256,7 @@ const uploadPostImage = async (req, res, next) => {
 
 module.exports = {
   getAllPosts,
-  getFriendsPosts,
+  getTimelinePosts,
   getOwnPosts,
   getPost,
   createNewPost,
