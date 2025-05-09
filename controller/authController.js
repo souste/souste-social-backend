@@ -38,7 +38,15 @@ const createNewUser = async (req, res, next) => {
     const profileResult = await pool.query(
       `INSERT INTO profile (user_id, picture, bio, location, birth_date, occupation, friend_count)
       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      [userId, '../assets/default-profile.JPG', '', '', null, '', 0]
+      [
+        userId,
+        'https://res.cloudinary.com/dbkarqkym/image/upload/v1744210239/souste-social-profile-pics/xcqqaiimfjwdxvnxeunq.jpg',
+        '',
+        '',
+        null,
+        '',
+        0,
+      ]
     );
 
     await pool.query('COMMIT');
