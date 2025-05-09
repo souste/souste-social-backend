@@ -80,9 +80,15 @@ const createNewUser = async (req, res, next) => {
 const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const result = await pool.query(`SELECT * FROM users WHERE email = $1`, [
-      email,
-    ]);
+    const result = await pool.query(
+      `
+       SELECT users.*, 
+       profile.picture  
+       FROM users 
+       JOIN profile ON users.id = profile.user_id
+       WHERE email = $1`,
+      [email]
+    );
 
     if (result.rows.length === 0) {
       return res.status(401).json({
