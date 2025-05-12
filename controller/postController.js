@@ -27,25 +27,28 @@ const getTimelinePosts = async (req, res, next) => {
 
     const result = await pool.query(
       `SELECT * FROM (
-       SELECT posts.*, users.username
+       SELECT posts.*, users.username, profile.picture
        FROM friendship
        JOIN users ON users.id = friendship.friend_id
        JOIN posts ON posts.user_id = users.id
+       JOIN profile ON profile.user_id = users.id
        WHERE friendship.user_id = $1 AND friendship.status = 'accepted'
 
        UNION
 
-       SELECT posts.*, users.username
+       SELECT posts.*, users.username, profile.picture
        FROM friendship
        JOIN users ON users.id = friendship.user_id
        JOIN posts ON posts.user_id = users.id
+       JOIN profile ON profile.user_id = users.id
        WHERE friendship.friend_id = $1 AND friendship.status = 'accepted'
 
        UNION
 
-       SELECT posts.*, users.username 
+       SELECT posts.*, users.username, profile.picture 
        FROM posts 
        JOIN users ON posts.user_id = users.id
+       JOIN profile ON profile.user_id = users.id
        WHERE posts.user_id = $1 
 
 
@@ -75,10 +78,11 @@ const getOwnPosts = async (req, res, next) => {
     const userId = parseInt(req.params.userId);
 
     const result = await pool.query(
-      `SELECT posts.*, users.username 
+      `SELECT posts.*, users.username, profile.picture
        FROM posts 
        JOIN users ON posts.user_id = users.id
-       WHERE user_id = $1 
+       JOIN profile ON profile.user_id = users.id
+       WHERE posts.user_id = $1 
        ORDER BY posts.created_at DESC`,
       [userId]
     );
@@ -103,7 +107,11 @@ const getPost = async (req, res, next) => {
   try {
     const postId = parseInt(req.params.id);
     const result = await pool.query(
-      'SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id WHERE posts.id = $1',
+      `SELECT posts.*, users.username, profile.picture 
+       FROM posts 
+       JOIN users ON posts.user_id = users.id 
+       JOIN profile ON profile.user_id = users.id
+       WHERE posts.id = $1`,
       [postId]
     );
 

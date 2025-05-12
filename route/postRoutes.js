@@ -19,7 +19,7 @@ const {
 } = require('../controller/likeController');
 const auth = require('../middleware/authMiddleware');
 
-router.get('/', getAllPosts);
+router.get('/', auth, getAllPosts);
 router.get('/friends/:userId', auth, getTimelinePosts);
 router.get('/own/:userId', auth, getOwnPosts);
 
