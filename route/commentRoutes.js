@@ -16,7 +16,7 @@ const {
 
 const auth = require('../middleware/authMiddleware');
 
-router.get('/', getAllCommentsByPost);
+router.get('/', auth, getAllCommentsByPost);
 router.get('/:id', auth, getCommentByPost);
 router.post('/', auth, createNewCommentByPost);
 router.patch('/:id', auth, updateCommentByPost);
