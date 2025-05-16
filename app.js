@@ -4,7 +4,10 @@ require('dotenv').config();
 
 const app = express();
 
-const allowedOrigins = 'http://localhost:5173';
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://souste-social.netlify.app',
+];
 
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 
