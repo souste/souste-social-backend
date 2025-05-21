@@ -12,7 +12,7 @@ const {
 
 const auth = require('../middleware/authMiddleware');
 
-router.get('/:recipientId', auth, getAllNotificationsForUser);
+router.get('/:recipientId', getAllNotificationsForUser);
 router.get('/:recipientId/unread', auth, getUnreadNotificationsForUser);
 
 router.post('/:recipientId', auth, createNotification);
