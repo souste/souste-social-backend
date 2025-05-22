@@ -142,6 +142,21 @@ const seedDB = async () => {
   `);
 
     await pool.query(`
+  UPDATE profile
+  SET friend_count = sub.count
+  FROM (
+    SELECT user_id, COUNT(*) as count
+    FROM (
+      SELECT user_id FROM friendship WHERE status = 'accepted'
+      UNION ALL
+      SELECT friend_id FROM friendship WHERE status = 'accepted'
+    ) AS all_friends
+    GROUP BY user_id
+  ) AS sub
+  WHERE profile.user_id = sub.user_id
+`);
+
+    await pool.query(`
   INSERT INTO posts (content, image, created_at, updated_at, privacy, user_id)
   VALUES 
   ('Just wrapped up my first week in the new city. Feels like a fresh start.', 
