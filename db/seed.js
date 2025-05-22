@@ -11,11 +11,13 @@ const seedDB = async () => {
     await pool.query('DELETE FROM comments');
     await pool.query('DELETE FROM posts');
     await pool.query('DELETE FROM profile');
+    await pool.query('DELETE FROM friendship');
     await pool.query('DELETE FROM users');
 
     await pool.query('ALTER SEQUENCE users_id_seq RESTART WITH 1');
     await pool.query('ALTER SEQUENCE posts_id_seq RESTART WITH 1');
     await pool.query('ALTER SEQUENCE comments_id_seq RESTART WITH 1');
+    await pool.query('ALTER SEQUENCE friendship_id_seq RESTART WITH 1');
 
     await pool.query(
       `
@@ -57,7 +59,7 @@ const seedDB = async () => {
    'Manchester', '1997-06-22', 'Lawyer', 0),
   (3, 'https://res.cloudinary.com/dbkarqkym/image/upload/v1747839263/souste-social-profile-pics/xmsu09d8k0qdu8os3qpc.jpg',
    'Mixed signals are my cardio.',
-   'London', '1989-09-10', 'Graphic Designer', 0),
+   'London', '1989-09-10', 'Software Developer', 0),
   (4, 'https://res.cloudinary.com/dbkarqkym/image/upload/v1747839310/souste-social-profile-pics/cd2xqpzr1mx6ta57djcv.jpg',
    'Keep it simple, lift heavy.',
    'Glasgow', '1988-11-05', 'Personal Trainer', 0),
@@ -115,19 +117,54 @@ const seedDB = async () => {
 `);
 
     await pool.query(`
-      INSERT INTO posts (content, created_at, updated_at, privacy, user_id)
-      VALUES 
-      ('A firsthand account of the horrors of war.', NOW(), NOW(), 'public', 1),
-      ('A hunting trip that didnt go as planned.', NOW(), NOW(), 'public', 2),
-      ('A sermon no one expected.', NOW(), NOW(), 'public', 6),
-      ('The monks are hiding something...', NOW(), NOW(), 'public', 12),
-      ('A fight for honor and revenge.', NOW(), NOW(), 'public', 9),
-      ('Tales from the front lines.', NOW(), NOW(), 'public', 8),
-      ('Tracking down a ruthless gang.', NOW(), NOW(), 'public', 3),
-      ('Lessons from Sir Radzig.', NOW(), NOW(), 'public', 7),
-      ('Retribution for Skalitz.', NOW(), NOW(), 'public', 4),
-      ('Why every warrior needs a dog.', NOW(), NOW(), 'public', 5)
-    `);
+  INSERT INTO friendship (user_id, friend_id, status, created_at)
+  VALUES
+      (1, 2, 'accepted', NOW()),  
+      (1, 3, 'accepted', NOW()),  
+      (2, 4, 'accepted', NOW()),  
+      (5, 1, 'accepted', NOW()),  
+      (6, 1, 'accepted', NOW()),  
+      (14, 1, 'accepted', NOW()), 
+      (7, 1, 'accepted', NOW()),  
+      (1, 16, 'accepted', NOW()),
+      (21, 1, 'accepted', NOW()), 
+      (21, 2, 'accepted', NOW()),  
+      (21, 6, 'accepted', NOW()),
+      (21, 7, 'accepted', NOW()), 
+      (21, 9, 'accepted', NOW()),  
+      (21, 12, 'accepted', NOW()),  
+      (21, 8, 'accepted', NOW()),
+      (21, 4, 'accepted', NOW()), 
+      (21, 5, 'accepted', NOW()), 
+      (11, 21, 'accepted', NOW()),
+      (15, 21, 'pending', NOW()),  
+      (16, 21, 'pending', NOW())   
+  `);
+
+    await pool.query(`
+  INSERT INTO posts (content, image, created_at, updated_at, privacy, user_id)
+  VALUES 
+  ('Just wrapped up my first week in the new city. Feels like a fresh start.', 
+  'https://res.cloudinary.com/dbkarqkym/image/upload/v1747918576/souste-social-post-images/kjshtbbomunzpkrk7aqj.jpg', NOW() - INTERVAL '10 days', NOW() - INTERVAL '10 days', 'public', 1),
+  ('Hiked the Peaks solo today. Needed that headspace reset.',
+  'https://res.cloudinary.com/dbkarqkym/image/upload/v1747918186/souste-social-post-images/nw7lf1lsocfboaa7lwib.jpg', NOW() - INTERVAL '9 days', NOW() - INTERVAL '9 days', 'public', 2),
+  ('Trying to cut down on caffeine but flat whites keep calling my name.',
+  'https://res.cloudinary.com/dbkarqkym/image/upload/v1747918421/souste-social-post-images/znmxmwd0zcjnyxe0bw2m.png', NOW() - INTERVAL '8 days', NOW() - INTERVAL '8 days', 'public', 6),
+  ('Anyone else getting obsessed with cold water dips lately?',
+  'https://res.cloudinary.com/dbkarqkym/image/upload/v1747919824/souste-social-post-images/yyopirt7ukdlgyv0llpd.jpg', NOW() - INTERVAL '7 days', NOW() - INTERVAL '7 days', 'public', 12),
+  ('Sauron, created by AI!.',
+  'https://res.cloudinary.com/dbkarqkym/image/upload/v1747918962/souste-social-post-images/uxi9qvpb8kmvwcega5kx.jpg', NOW() - INTERVAL '6 days', NOW() - INTERVAL '6 days', 'public', 9),
+  ('Running clears my mind like nothing else. 10k before sunrise today.',
+  'https://res.cloudinary.com/dbkarqkym/image/upload/v1747919691/souste-social-post-images/xb3ljfqpnxsawnk7x4ef.jpg', NOW() - INTERVAL '5 days', NOW() - INTERVAL '5 days', 'public', 8),
+  ('Just finished a React project I’m actually proud of. Big step forward.',
+  'https://res.cloudinary.com/dbkarqkym/image/upload/v1747918818/souste-social-post-images/efvpdlkksw1olbgy58ty.jpg', NOW() - INTERVAL '4 days', NOW() - INTERVAL '4 days', 'public', 3),
+  ('My cat Henry x.',
+  'https://res.cloudinary.com/dbkarqkym/image/upload/v1747919309/souste-social-post-images/v2gtmmattef5pmnxhunk.jpg', NOW() - INTERVAL '3 days', NOW() - INTERVAL '3 days', 'public', 7),
+  ('Tough week mentally, but still standing. That’s something.',
+  'https://res.cloudinary.com/dbkarqkym/image/upload/v1747918317/souste-social-post-images/ndysiogiqabodrrentst.jpg', NOW() - INTERVAL '2 days', NOW() - INTERVAL '2 days', 'public', 4),
+  ('Off to Ibiza this weekend, cannot wait!',
+  'https://res.cloudinary.com/dbkarqkym/image/upload/v1747919554/souste-social-post-images/cgqxmayyqxzxphzbb0fm.jpg', NOW() - INTERVAL '1 day', NOW() - INTERVAL '1 day', 'public', 5)
+`);
 
     await pool.query(`
       INSERT INTO comments (content, created_at, updated_at, user_id, post_id, parent_comment_id) 
