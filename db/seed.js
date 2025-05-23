@@ -184,18 +184,18 @@ const seedDB = async () => {
     await pool.query(`
       INSERT INTO comments (content, created_at, updated_at, user_id, post_id, parent_comment_id) 
       VALUES 
-      ('This battle was a nightmare. I barely made it out alive.', NOW(), NOW(), 1, 1, NULL), 
-      ('It really was a nightmare. Cannot believe it.', NOW(), NOW(), 1, 1, NULL), 
-      ('And the start of a new adventure centered around revenge begins!', NOW(), NOW(), 1, 1, NULL), 
-      ('Henry, you owe me another hunting trip!', NOW(), NOW(), 2, 2, NULL), 
-      ('I never expected that from Father Godwin... what a sermon!', NOW(), NOW(), 6, 3, NULL), 
-      ('The monastery is full of secrets... you should investigate.', NOW(), NOW(), 12, 4, NULL), 
-      ('I challenged Erik to a duel. Best fight of my life.', NOW(), NOW(), 9, 5, NULL), 
-      ('Talmberg was a fortress, but it fell. We must rebuild.', NOW(), NOW(), 8, 6, NULL), 
-      ('Those bandits were tough, but we handled them.', NOW(), NOW(), 3, 7, NULL), 
-      ('Sir Radzigs training changed my life.', NOW(), NOW(), 7, 8, NULL), 
-      ('Markvart got what he deserved.', NOW(), NOW(), 4, 9, NULL), 
-      ('A mans best friend, indeed. Mutt is the true hero.', NOW(), NOW(), 5, 10, NULL)
+      ('Big moves! Fresh starts are everything. How are you finding it so far?', NOW(), NOW(), 2, 1, NULL), 
+      ('New city energy hits different. Excited for your next chapter!', NOW(), NOW(), 6, 1, NULL), 
+      ('Change of scenery does wonders for the soul. Good for you!', NOW(), NOW(), 7, 1, NULL), 
+      ('Solo hikes are the best therapy. The Peaks are stunning this time of year.', NOW(), NOW(), 1, 2, NULL), 
+      ('The struggle is real! Maybe try oat milk cortados as a compromise?', NOW(), NOW(), 1, 3, NULL), 
+      ('Yes! Started doing them last month and I am addicted. Game changer for mental clarity.', NOW(), NOW(), 9, 4, NULL), 
+      ('This is incredible! What AI tool did you use? The detail is insane.', NOW(), NOW(), 3, 5, NULL), 
+      ('10k before sunrise is dedication! Running is pure meditation in motion.', NOW(), NOW(), 4, 6, NULL), 
+      ('React projects that you are proud of are the best feeling. What did you build?', NOW(), NOW(), 12, 7, NULL), 
+      ('Henry is gorgeous! Cats really know how to live their best life.', NOW(), NOW(), 5, 8, NULL), 
+      ('You are stronger than you know. Some weeks test us but we keep going.', NOW(), NOW(), 20, 9, NULL), 
+      ('Ibiza vibes! Have the best time, you deserve it after this week.', NOW(), NOW(), 8, 10, NULL)
     `);
 
     console.log('Database Successfully Seeded');
