@@ -137,8 +137,6 @@ const seedDB = async () => {
       (21, 4, 'accepted', NOW()), 
       (21, 5, 'accepted', NOW()), 
       (11, 21, 'accepted', NOW()),
-      (15, 21, 'pending', NOW()),  
-      (16, 21, 'pending', NOW())   
   `);
 
     await pool.query(`
