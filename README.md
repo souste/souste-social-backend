@@ -20,7 +20,7 @@ Frontend Repository available here: https://github.com/souste/souste-social-fron
 
 All functionality is powered by RESTful API endpoints:
 
-- User authentication: sign up, login, and logout
+- User authentication: sign up, login, and logout.
 - CRUD operations for posts and comments with timestamps
 - Like and unlike posts and comments
 - User profile management with edit functionality
@@ -55,7 +55,7 @@ Explore the [live demo](https://souste-social.netlify.app/) to test the app inst
    - Optional: seed the database with mock data using `node db/seed.js`
 4. Configure backend environment variables in .env file:
    ```env
-   - DATABASE_URL=<your_postgresql_url> (or local DB variables: user, host,      database, password, port)
+   - DATABASE_URL=<your_postgresql_url> (or local DB variables: user, host, database, password, port)
    - JWT_SECRET=<your_jwt_secret>
    - CLOUDINARY_CLOUD_NAME=<your_cloudinary_cloud_name>
    - CLOUDINARY_API_KEY=<your_cloudinary_key>
