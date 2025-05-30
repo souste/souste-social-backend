@@ -1,4 +1,4 @@
-# Souste Store: Backend
+# Souste Social: Backend
 
 [![Node.js](https://img.shields.io/badge/Node.js-20-green)](https://nodejs.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org)
