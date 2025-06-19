@@ -180,7 +180,7 @@ const updatePost = async (req, res, next) => {
       });
     }
     const result = await pool.query(
-      'UPDATE posts SET content = $1, image = $2 WHERE id = $3 RETURNING *',
+      'UPDATE posts SET content = $1, image = $2, updated_at = Now() WHERE id = $3 RETURNING *',
       [content, image, postId]
     );
 

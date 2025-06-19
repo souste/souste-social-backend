@@ -197,7 +197,7 @@ const updateUserMessage = async (req, res, next) => {
       });
     }
     const result = await pool.query(
-      `UPDATE messages SET message = $1 WHERE user_id = $2 AND id = $3 RETURNING *`,
+      `UPDATE messages SET message = $1, updated_at = Now() WHERE user_id = $2 AND id = $3 RETURNING *`,
       [message, userId, messageId]
     );
     res.status(200).json({
