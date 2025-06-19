@@ -147,7 +147,7 @@ const updateCommentByPost = async (req, res, next) => {
     }
 
     const result = await pool.query(
-      `UPDATE comments SET content = $1 WHERE id = $2 RETURNING *`,
+      `UPDATE comments SET content = $1, updated_at = Now() WHERE id = $2 RETURNING *`,
       [content, commentId]
     );
 
