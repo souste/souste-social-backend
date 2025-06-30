@@ -84,6 +84,48 @@ const getUnreadNotificationsForUser = async (req, res, next) => {
   }
 };
 
+const getReadNotificationsForUser = async (req, res, next) => {
+  try {
+    const recipientId = parseInt(req.params.recipientId);
+
+    const recipientCheck = await pool.query(
+      `SELECT * FROM users WHERE id = $1`,
+      [recipientId]
+    );
+    if (recipientCheck.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Recipient Not Found',
+        message: `No recipient found with id ${recipientId}`,
+      });
+    }
+
+    const result = await pool.query(
+      `
+      SELECT notifications.*, profile.picture
+      FROM notifications
+      LEFT JOIN profile ON notifications.sender_id = profile.user_id
+      WHERE recipient_id = $1 AND is_read = true
+      ORDER BY created_at DESC`,
+      [recipientId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'No notifications found',
+        message: `No notifications found for recipient ${recipientId}`,
+      });
+    }
+    res.status(200).json({
+      success: true,
+      notifications: result.rows,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const createNotification = async (req, res, next) => {
   try {
     const recipientId = parseInt(req.params.recipientId);
@@ -298,6 +340,7 @@ const deleteAllNotificationsForUser = async (req, res, next) => {
 module.exports = {
   getAllNotificationsForUser,
   getUnreadNotificationsForUser,
+  getReadNotificationsForUser,
   createNotification,
   readNotification,
   readAllNotificationsForUser,
