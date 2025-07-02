@@ -126,6 +126,38 @@ const getReadNotificationsForUser = async (req, res, next) => {
   }
 };
 
+const getUnreadNotificationCount = async (req, res, next) => {
+  try {
+    const recipientId = parseInt(req.params.recipientId);
+
+    const userCheck = await pool.query(`SELECT * FROM users WHERE id = $1`, [
+      recipientId,
+    ]);
+
+    if (userCheck.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: `Not found`,
+        message: `User with ID ${recipientId} not found`,
+      });
+    }
+
+    const result = await pool.query(
+      `SELECT COUNT(*) FROM notifications
+    WHERE recipient_id = $1 AND is_read = FALSE`,
+      [recipientId]
+    );
+
+    res.status(200).json({
+      success: true,
+      count: parseInt(result.rows[0].count),
+      message: 'Unread notification count retrieved successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const createNotification = async (req, res, next) => {
   try {
     const recipientId = parseInt(req.params.recipientId);
@@ -341,6 +373,7 @@ module.exports = {
   getAllNotificationsForUser,
   getUnreadNotificationsForUser,
   getReadNotificationsForUser,
+  getUnreadNotificationCount,
   createNotification,
   readNotification,
   readAllNotificationsForUser,

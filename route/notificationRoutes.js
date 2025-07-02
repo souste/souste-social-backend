@@ -4,6 +4,7 @@ const {
   getAllNotificationsForUser,
   getUnreadNotificationsForUser,
   getReadNotificationsForUser,
+  getUnreadNotificationCount,
   createNotification,
   readNotification,
   readAllNotificationsForUser,
@@ -16,6 +17,7 @@ const auth = require('../middleware/authMiddleware');
 router.get('/:recipientId', auth, getAllNotificationsForUser);
 router.get('/:recipientId/unread', auth, getUnreadNotificationsForUser);
 router.get('/:recipientId/read', auth, getReadNotificationsForUser);
+router.get('/:recipientId/unreadCount', auth, getUnreadNotificationCount);
 
 router.post('/:recipientId', auth, createNotification);
 
