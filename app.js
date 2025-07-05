@@ -1,8 +1,14 @@
 const express = require('express');
+const { createServer } = require('node:http');
+const { Server } = require('socket.io');
 const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
+const server = createServer(app);
+const io = new Server(server, {
+  connectionStateRecovery: {},
+});
 
 const allowedOrigins = [
   'http://localhost:5173',
@@ -13,8 +19,16 @@ app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 app.use(express.json());
 
+app.use(express.static('public'));
+
 app.get('/', (req, res) => {
   res.send('API is running...');
+});
+
+io.on('connection', (socket) => {
+  socket.on('chat message', (msg) => {
+    io.emit('chat message', msg);
+  });
 });
 
 const userRoutes = require('./route/userRoutes');
@@ -42,6 +56,6 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`souste social - listening on PORT ${PORT}`);
 });
