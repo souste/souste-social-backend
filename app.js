@@ -1,17 +1,19 @@
 const express = require('express');
 const { createServer } = require('node:http');
 const { Server } = require('socket.io');
-const pool = require('../db/pool');
+const pool = require('./db/pool');
 const cors = require('cors');
 require('dotenv').config();
 
 async function main() {
-  // Need sql db logic here
-
   const app = express();
   const server = createServer(app);
   const io = new Server(server, {
-    connectionStateRecovery: {},
+    cors: {
+      origin: ['http://localhost:5173', 'https://souste-social.netlify.app'],
+      methods: ['GET', 'POST'],
+      credentials: true,
+    },
   });
 
   const allowedOrigins = [
