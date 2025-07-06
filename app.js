@@ -33,16 +33,41 @@ async function main() {
     console.log('New user connected');
     socket.on('send message', async ({ userId, friendId, message }) => {
       try {
+        if (!message || message.trim() === '') {
+          console.warn('Empty message blocked');
+          return;
+        }
+
+        const friendCheck = await pool.query(
+          `SELECT * FROM users WHERE id = $1`,
+          [friendId]
+        );
+
+        if (friendCheck.rows.length === 0) {
+          console.warn(`No friend found with id ${friendId}`);
+          return;
+        }
+
         const result = await pool.query(
           `INSERT INTO messages (user_id, friend_id, message) VALUES ($1, $2, $3) RETURNING id, created_at`,
           [userId, friendId, message]
         );
+
+        const userResult = await pool.query(
+          `SELECT username FROM users WHERE id = $1`,
+          [userId]
+        );
+
+        const createdMessage = result.rows[0];
+        createdMessage.username = userResult.rows[0].username;
+
         io.emit('message', {
-          userId,
-          friendId,
-          message,
-          messageId: result.rows[0].id,
-          createdAt: result.rows[0].created_at,
+          id: createdMessage.id,
+          user_id: userId,
+          friend_id: friendId,
+          message: createdMessage.message,
+          created_at: createdMessage.created_at,
+          username: createdMessage.username,
         });
       } catch (err) {
         console.error('Error inserting message:', err);
