@@ -49,7 +49,7 @@ async function main() {
         }
 
         const result = await pool.query(
-          `INSERT INTO messages (user_id, friend_id, message) VALUES ($1, $2, $3) RETURNING id, created_at`,
+          `INSERT INTO messages (user_id, friend_id, message) VALUES ($1, $2, $3) RETURNING id, message, created_at`,
           [userId, friendId, message]
         );
 
@@ -58,17 +58,16 @@ async function main() {
           [userId]
         );
 
-        const createdMessage = result.rows[0];
-        createdMessage.username = userResult.rows[0].username;
-
-        io.emit('message', {
-          id: createdMessage.id,
+        const createdMessage = {
+          id: result.rows[0].id,
           user_id: userId,
           friend_id: friendId,
-          message: createdMessage.message,
-          created_at: createdMessage.created_at,
-          username: createdMessage.username,
-        });
+          message: result.rows[0].message,
+          created_at: result.rows[0].created_at,
+          username: userResult.rows[0].username,
+        };
+        console.log('Emitting socket message:', createdMessage);
+        io.emit('message', createdMessage);
       } catch (err) {
         console.error('Error inserting message:', err);
       }
