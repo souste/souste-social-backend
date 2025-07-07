@@ -30,6 +30,10 @@ async function main() {
   });
 
   io.on('connection', (socket) => {
+    socket.on('join', (userId) => {
+      socket.join(userId);
+      console.log(`User ${userId} joined their personal room`);
+    });
     console.log('New user connected');
     socket.on('send message', async ({ userId, friendId, message }) => {
       try {
@@ -72,6 +76,77 @@ async function main() {
         console.error('Error inserting message:', err);
       }
     });
+
+    socket.on(
+      'send notification',
+      async ({ recipientId, senderId, type, referenceId, message }) => {
+        try {
+          const validTypes = [
+            'post',
+            'comment',
+            'message',
+            'friend_request',
+            'friend_accept',
+            'like_post',
+            'like_comment',
+          ];
+
+          if (!type || !validTypes.includes(type)) {
+            console.warn('Invalid notification type');
+            return;
+          }
+
+          const recipientCheck = await pool.query(
+            `SELECT * FROM users WHERE id = $1`,
+            [recipientId]
+          );
+          if (recipientCheck.rows.length === 0) {
+            console.warn(`No user found with id ${recipientId}`);
+          }
+
+          const senderCheck = await pool.query(
+            `SELECT * FROM users WHERE id = $1`,
+            [senderId]
+          );
+          if (senderCheck.rows.length === 0) {
+            console.warn(`No sender found with id ${senderId}`);
+            return;
+          }
+
+          if (!recipientId || !referenceId || !message) {
+            console.warn('recipientId, referenceId and message are required');
+            return;
+          }
+
+          if (recipientId === senderId) {
+            console.warn('Users cannot sent notifications to themselves');
+            return;
+          }
+
+          const result = await pool.query(
+            `INSERT INTO notifications(type, reference_id, message, recipient_id, sender_id)
+            VALUES ($1, $2, $3, $4, $5) 
+            RETURNING *`,
+            [type, referenceId, message, recipientId, senderId]
+          );
+
+          const createdNotification = {
+            id: result.rows[0].id,
+            recipient_id: recipientId,
+            sender_id: senderId,
+            type: result.rows[0].type,
+            reference_id: result.rows[0].reference_id,
+            message: result.rows[0].message,
+            is_read: result.rows[0].is_read,
+            created_at: result.rows[0].created_at,
+          };
+          io.to(recipientId).emit('notification', createdNotification);
+        } catch (err) {
+          console.error('Error inserting notification', err);
+        }
+      }
+    );
+
     socket.on('disconnect', () => {
       console.log('User disconnected');
     });
