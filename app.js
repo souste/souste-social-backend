@@ -130,6 +130,11 @@ async function main() {
             [type, referenceId, message, recipientId, senderId]
           );
 
+          const profileResult = await pool.query(
+            `SELECT picture FROM profile where user_id = $1`,
+            [senderId]
+          );
+
           const createdNotification = {
             id: result.rows[0].id,
             recipient_id: recipientId,
@@ -137,11 +142,12 @@ async function main() {
             type: result.rows[0].type,
             reference_id: result.rows[0].reference_id,
             message: result.rows[0].message,
+            picture: profileResult.rows[0].picture,
             is_read: result.rows[0].is_read,
             created_at: result.rows[0].created_at,
           };
 
-          io.emit('notification', createdNotification);
+          io.to(String(recipientId)).emit('notification', createdNotification);
         } catch (err) {
           console.error('Error inserting notification', err);
         }
