@@ -147,7 +147,7 @@ async function main() {
             created_at: result.rows[0].created_at,
           };
 
-          io.to(String(recipientId)).emit('notification', createdNotification);
+          io.emit('notification', createdNotification);
         } catch (err) {
           console.error('Error inserting notification', err);
         }
