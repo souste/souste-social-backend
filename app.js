@@ -140,7 +140,18 @@ async function main() {
             is_read: result.rows[0].is_read,
             created_at: result.rows[0].created_at,
           };
-          io.to(recipientId).emit('notification', createdNotification);
+
+          console.log('⚡ Notification received on server:', {
+            recipientId,
+            senderId,
+            type,
+            referenceId,
+            message,
+          });
+          console.log('📣 About to emit notification to:', String(recipientId));
+          console.log('🔔 Notification payload:', createdNotification);
+
+          io.to(String(recipientId)).emit('notification', createdNotification);
         } catch (err) {
           console.error('Error inserting notification', err);
         }
