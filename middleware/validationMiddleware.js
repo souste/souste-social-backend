@@ -47,6 +47,33 @@ const validateLogin = [
   body('password').trim().notEmpty().withMessage('Password is required'),
 ];
 
+const validateEditProfile = [
+  body('bio')
+    .optional()
+    .isLength({ min: 1, max: 300 })
+    .withMessage('Bio must be between 1 and 300 characters'),
+  body('location')
+    .optional()
+    .isString()
+    .isLength({ max: 100 })
+    .withMessage('Location must be under 100 characters'),
+  body('occupation')
+    .optional()
+    .isString()
+    .isLength({ max: 50 })
+    .withMessage('Occupation must be less than 50 characters'),
+  body('birth_date')
+    .optional({ checkFalsy: true }) // allow blank/null
+    .isISO8601()
+    .withMessage('Invalid date format')
+    .isBefore(new Date().toISOString())
+    .withMessage('Birthday must be in the past'),
+  body('picture')
+    .optional()
+    .isURL()
+    .withMessage('Profile picture must be a valid URL'),
+];
+
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -61,5 +88,6 @@ const handleValidationErrors = (req, res, next) => {
 module.exports = {
   validateUser,
   validateLogin,
+  validateEditProfile,
   handleValidationErrors,
 };

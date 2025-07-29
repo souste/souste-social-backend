@@ -11,6 +11,10 @@ const {
   uploadProfileImage,
   getAllProfiles,
 } = require('../controller/userController');
+const {
+  validateEditProfile,
+  handleValidationErrors,
+} = require('../middleware/validationMiddleware');
 
 const auth = require('../middleware/authMiddleware');
 
@@ -22,7 +26,13 @@ router.patch('/:id', auth, updateUser);
 router.delete('/:id', auth, deleteUser);
 
 router.get('/:id/profile', auth, getProfile);
-router.patch(`/:id/profile`, auth, updateProfile);
+router.patch(
+  `/:id/profile`,
+  auth,
+  validateEditProfile,
+  handleValidationErrors,
+  updateProfile
+);
 
 router.post('/:id/profile/image', auth, uploadMiddleware, uploadProfileImage);
 

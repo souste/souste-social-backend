@@ -187,6 +187,15 @@ const updateProfile = async (req, res, next) => {
       });
     }
 
+    if (req.user.id !== parseInt(req.params.id, 10)) {
+      return res
+        .status(403)
+        .json({
+          success: false,
+          message: 'Not authorized to edit this profile',
+        });
+    }
+
     const result = await pool.query(
       `UPDATE profile SET picture = $1, bio = $2, location = $3, birth_date = $4, occupation = $5, friend_count = $6 WHERE user_id = $7 RETURNING *`,
       [
