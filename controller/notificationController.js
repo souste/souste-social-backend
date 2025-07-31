@@ -311,10 +311,12 @@ const readAllNotificationsForUser = async (req, res, next) => {
 const deleteNotification = async (req, res, next) => {
   try {
     const notificationId = parseInt(req.params.notificationId);
+    const userId = req.user.id;
 
-    const result = await pool.query(`DELETE FROM notifications WHERE id = $1`, [
-      notificationId,
-    ]);
+    const result = await pool.query(
+      `DELETE FROM notifications WHERE id = $1 AND recipient_id = $2`,
+      [notificationId, userId]
+    );
 
     if (result.rowCount === 0) {
       return res.status(404).json({
@@ -324,9 +326,19 @@ const deleteNotification = async (req, res, next) => {
       });
     }
 
+    const countResult = await pool.query(
+      `SELECT COUNT(*) FROM notifications WHERE recipient_id = $1 AND is_read = false`,
+      [userId]
+    );
+
+    const unreadCount = parseInt(countResult.rows[0].count, 10);
+
+    req.io.to(userId).emit('notification:unreadCount', unreadCount);
+
     res.status(200).json({
       success: true,
       message: 'Notification deleted successfully',
+      unreadCount,
     });
   } catch (err) {
     next(err);
@@ -360,9 +372,20 @@ const deleteAllNotificationsForUser = async (req, res, next) => {
         message: `No existing notifications for recipient ${recipientId}`,
       });
     }
+
+    const countResult = await pool.query(
+      `SELECT COUNT(*) FROM notifications WHERE recipient_id = $1 AND is_read = false`,
+      [recipientId]
+    );
+
+    const unreadCount = parseInt(countResult.rows[0].count, 10);
+
+    req.io.to(recipientId).emit('notification:unreadCount', unreadCount);
+
     res.status(200).json({
       success: true,
       message: `All notifications deleted for recipient ${recipientId}`,
+      unreadCount,
     });
   } catch (err) {
     next(err);
