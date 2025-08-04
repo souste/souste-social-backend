@@ -25,6 +25,11 @@ async function main() {
 
   app.use(express.json());
 
+  app.use((req, res, next) => {
+    req.io = io;
+    next();
+  });
+
   app.get('/', (req, res) => {
     res.send('API is running...');
   });
