@@ -313,12 +313,15 @@ const deleteNotification = async (req, res, next) => {
     const notificationId = parseInt(req.params.notificationId);
     const userId = req.user.id;
 
+    console.log('Attempting delete:', { notificationId, userId });
+
     const result = await pool.query(
       `DELETE FROM notifications WHERE id = $1 AND recipient_id = $2`,
       [notificationId, userId]
     );
 
     if (result.rowCount === 0) {
+      console.log('No notification found for that ID + user combo');
       return res.status(404).json({
         success: false,
         error: 'Notification not found',
@@ -333,7 +336,8 @@ const deleteNotification = async (req, res, next) => {
 
     const unreadCount = parseInt(countResult.rows[0].count, 10);
 
-    req.io.to(userId).emit('notification:unreadCount', unreadCount);
+    console.log(`Emitting unreadCount update to user ${userId}:`, unreadCount);
+    req.io.to(String(userId)).emit('notification:unreadCount', unreadCount);
 
     res.status(200).json({
       success: true,

@@ -31,7 +31,8 @@ async function main() {
 
   io.on('connection', (socket) => {
     socket.on('join', (userId) => {
-      socket.join(userId);
+      const room = String(userId);
+      socket.join(room);
       console.log(`User ${userId} joined their personal room`);
     });
     console.log('New user connected');
