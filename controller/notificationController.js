@@ -307,13 +307,26 @@ const readAllNotificationsForUser = async (req, res, next) => {
         success: true,
         message: `No unread notifications for recipient ${recipientId}`,
         notifications: [],
+        unreadCount: 0,
       });
     }
+
+    const countResult = await pool.query(
+      `SELECT COUNT(*) FROM notifications WHERE recipient_id = $1 AND is_read = false`,
+      [recipientId]
+    );
+
+    const unreadCount = parseInt(countResult.rows[0].count, 10);
+
+    req.io
+      .to(String(recipientId))
+      .emit('notification:unreadCount', unreadCount);
 
     res.status(200).json({
       success: true,
       message: `All notifications marked as read for recipient ${recipientId}`,
       notifications: result.rows,
+      unreadCount,
     });
   } catch (err) {
     next(err);
