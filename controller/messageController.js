@@ -83,17 +83,9 @@ const getConversationWithUser = async (req, res, next) => {
       [userId, friendId]
     );
 
-    if (messages.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        error: 'No conversation found',
-        message: `No conversation found between users ${userId} and ${friendId}`,
-      });
-    }
-
     res.status(200).json({
       success: true,
-      data: messages.rows,
+      data: messages.rows || [],
     });
   } catch (err) {
     next(err);
