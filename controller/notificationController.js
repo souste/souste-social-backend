@@ -24,17 +24,9 @@ const getAllNotificationsForUser = async (req, res, next) => {
       [recipientId]
     );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        error: 'No notifications found',
-        message: `No notifications found for recipient ${recipientId}`,
-      });
-    }
-
     res.status(200).json({
       success: true,
-      notifications: result.rows,
+      notifications: result.rows || [],
     });
   } catch (err) {
     next(err);
@@ -67,17 +59,9 @@ const getUnreadNotificationsForUser = async (req, res, next) => {
       [recipientId]
     );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        error: 'No notifications found',
-        message: `No notifications found for recipient ${recipientId}`,
-      });
-    }
-
     res.status(200).json({
       success: true,
-      notifications: result.rows,
+      notifications: result.rows || [],
     });
   } catch (err) {
     next(err);
@@ -110,16 +94,9 @@ const getReadNotificationsForUser = async (req, res, next) => {
       [recipientId]
     );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        error: 'No notifications found',
-        message: `No notifications found for recipient ${recipientId}`,
-      });
-    }
     res.status(200).json({
       success: true,
-      notifications: result.rows,
+      notifications: result.rows || [],
     });
   } catch (err) {
     next(err);
