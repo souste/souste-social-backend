@@ -8,6 +8,8 @@ This is a full stack social media web application, built as the final project fo
 
 Frontend Repository available here: https://github.com/souste/souste-social-frontend
 
+⚠️ Demo video recorded earlier build (May 2025). App has since been updated with real-time notifications, unread counts, and UI improvements. Please see GitHub for latest version.
+
 ## Tech Stack
 
 - **Backend**: Node.js (v20), Express - for robust API development
@@ -30,10 +32,7 @@ All functionality is powered by RESTful API endpoints:
 - Notifications for friend requests, comments, likes on posts and comments, and messages
 - Server-side form validation with error handling for secure data processing
 - Comprehensive error handling for all API endpoints (e.g. validation, authentication, and server errors)
-
-## In Progress
-
-- Adding real-time messaging and notifications using Socket.io
+- Real-time messaging and notifications using Socket.io
 
 ## Getting Started
 
