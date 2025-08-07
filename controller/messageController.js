@@ -232,6 +232,35 @@ const deleteUserMessage = async (req, res, next) => {
   }
 };
 
+const deleteConversationWithUser = async (req, res, next) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const friendId = parseInt(req.params.friendId);
+
+    const usersCheck = await pool.query(
+      `SELECT * FROM users WHERE id = $1 OR id = $2`,
+      [userId, friendId]
+    );
+    if (usersCheck.rows.length < 2) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+        message: `One or both users not found with ids ${userId} and/or ${friendId}`,
+      });
+    }
+    const result = await pool.query(
+      `DELETE FROM messages WHERE (user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1)`,
+      [userId, friendId]
+    );
+    res.status(200).json({
+      success: true,
+      message: `${result.rowCount} message(s) deleted.`,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getAllMessages,
   getAllConversations,
@@ -240,4 +269,5 @@ module.exports = {
   sendMessage,
   updateUserMessage,
   deleteUserMessage,
+  deleteConversationWithUser,
 };
