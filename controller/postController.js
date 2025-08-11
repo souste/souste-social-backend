@@ -26,7 +26,15 @@ const getTimelinePosts = async (req, res, next) => {
     const userId = parseInt(req.params.userId);
 
     const result = await pool.query(
-      `SELECT * FROM (
+      ` SELECT
+        cp.*,
+        (SELECT COUNT(*)::int FROM comments c WHERE c.post_id = cp.id) AS comment_count,
+        (SELECT COUNT(*)::int FROM likes    l WHERE l.post_id = cp.id) AS like_count,
+        EXISTS (
+        SELECT 1 FROM likes l2
+        WHERE l2.post_id = cp.id AND l2.user_id = $1
+    ) AS viewer_has_liked
+      FROM (
        SELECT posts.*, users.username, profile.picture
        FROM friendship
        JOIN users ON users.id = friendship.friend_id
@@ -52,8 +60,8 @@ const getTimelinePosts = async (req, res, next) => {
        WHERE posts.user_id = $1 
 
 
-       ) AS combined_posts
-       ORDER BY combined_posts.created_at DESC`,
+       ) AS cp
+       ORDER BY cp.created_at DESC`,
       [userId]
     );
     if (result.rows.length === 0) {
@@ -66,7 +74,9 @@ const getTimelinePosts = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: result.rows,
-      message: 'Friends posts retrieved successfully',
+      message: result.rows.length
+        ? 'Friends posts retrieved successfully'
+        : 'No posts from friends available',
     });
   } catch (err) {
     next(err);
