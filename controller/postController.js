@@ -75,8 +75,8 @@ const getTimelinePosts = async (req, res, next) => {
       success: true,
       data: result.rows,
       message: result.rows.length
-        ? 'Friends posts retrieved successfully'
-        : 'No posts from friends available',
+        ? 'Timeline retrieved successfully'
+        : 'No posts in timeline',
     });
   } catch (err) {
     next(err);
@@ -88,25 +88,28 @@ const getOwnPosts = async (req, res, next) => {
     const userId = parseInt(req.params.userId);
 
     const result = await pool.query(
-      `SELECT posts.*, users.username, profile.picture
-       FROM posts 
-       JOIN users ON posts.user_id = users.id
-       JOIN profile ON profile.user_id = users.id
-       WHERE posts.user_id = $1 
-       ORDER BY posts.created_at DESC`,
+      `SELECT
+        p.*, u.username, pr.picture,
+        (SELECT COUNT(*)::int FROM comments c WHERE c.post_id = p.id) AS comment_count,
+        (SELECT COUNT(*)::int FROM likes    l WHERE l.post_id = p.id) AS like_count,
+        EXISTS (
+        SELECT 1 FROM likes l2
+        WHERE l2.post_id = p.id AND l2.user_id = $1
+    ) AS viewer_has_liked 
+       FROM posts p 
+       JOIN users u ON p.user_id = u.id
+       LEFT JOIN profile pr ON pr.user_id = u.id
+       WHERE p.user_id = $1 
+       ORDER BY p.created_at DESC, p.id DESC`,
       [userId]
     );
-    if (result.rows.length === 0) {
-      return res.status(200).json({
-        success: true,
-        data: [],
-        message: 'No posts from user available',
-      });
-    }
+
     res.status(200).json({
       success: true,
       data: result.rows,
-      message: 'User posts retrieved successfully',
+      message: result.rows.length
+        ? 'User posts retrieved successfully'
+        : 'No posts for this user',
     });
   } catch (err) {
     next(err);
