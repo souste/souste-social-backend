@@ -85,7 +85,14 @@ const getTimelinePosts = async (req, res, next) => {
 
 const getOwnPosts = async (req, res, next) => {
   try {
-    const userId = parseInt(req.params.userId);
+    const profileId = Number(req.params.userId);
+    const viewerId = Number(req.user?.id);
+
+    if (!Number.isInteger(profileId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Invalid userId' });
+    }
 
     const result = await pool.query(
       `SELECT
@@ -94,14 +101,14 @@ const getOwnPosts = async (req, res, next) => {
         (SELECT COUNT(*)::int FROM likes    l WHERE l.post_id = p.id) AS like_count,
         EXISTS (
         SELECT 1 FROM likes l2
-        WHERE l2.post_id = p.id AND l2.user_id = $1
+        WHERE l2.post_id = p.id AND l2.user_id = $2
     ) AS viewer_has_liked 
        FROM posts p 
        JOIN users u ON p.user_id = u.id
        LEFT JOIN profile pr ON pr.user_id = u.id
        WHERE p.user_id = $1 
        ORDER BY p.created_at DESC, p.id DESC`,
-      [userId]
+      [profileId, viewerId || 0]
     );
 
     res.status(200).json({
