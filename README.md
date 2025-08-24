@@ -4,11 +4,13 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org)
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Netlify-brightgreen)](https://souste-social.netlify.app/)
 
-This is a full stack social media web application, built as the final project for The Odin Project curriculum. The Node.js/Express API powers user authentication, posts, comments, friend interactions, messaging, and notifications through RESTful endpoints
+Souste Social is a full-stack social media web application, built as the capstone project for The Odin Project
 
 Frontend Repository available here: https://github.com/souste/souste-social-frontend
 
-⚠️ Demo video recorded earlier build (May 2025). App has since been updated with real-time notifications, unread counts, and UI improvements. Please see GitHub for latest version.
+## Demo Video
+
+[Watch on YouTube](https://www.youtube.com/watch?v=faOZH4V3Qts) 🎥
 
 ## Tech Stack
 
